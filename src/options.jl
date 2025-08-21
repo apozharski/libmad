@@ -215,3 +215,21 @@ end
 macro options(expr)
     esc(genoptsetters(eval(expr)))
 end
+
+macro concrete_dict(dictname, type)
+    concrete_types = []
+    abstract_types = [eval(type)]
+    while !isempty(abstract_types)
+        type = pop!(abstract_types)
+        stypes = subtypes(type)
+        if isempty(stypes)
+            push!(concrete_types,Core.typename(type).wrapper)
+        else
+            append!(abstract_types,stypes)
+        end
+    end
+
+    dict = Dict([(String(nameof(ctype)), ctype) for ctype in concrete_types])
+    
+    return esc(:($(dictname) = $(dict)))
+end

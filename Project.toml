@@ -1,11 +1,13 @@
 name = "libMad"
 uuid = "3cb06f27-fa54-49c1-aeea-14d13a711cb4"
-authors = ["Anton Edvinovich Pozharskiy <anton.pozharskiy@imtek.uni-freiburg.de>"]
 version = "0.1.0"
+authors = ["Anton Edvinovich Pozharskiy <anton.pozharskiy@imtek.uni-freiburg.de>"]
 
 [deps]
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 MadNLP = "2621e9c9-9eb4-46b1-8089-e8c72242dfb6"
+NLPModels = "a4795742-8479-5a88-8948-cc11e1c8c1a6"
 
 [compat]
 InteractiveUtils = "1.11.0"
+NLPModels = "0.21.5"
