@@ -7,10 +7,12 @@ using NLPModels
 libmad_refs::Dict{Ptr{Any}, Any} = Dict()
 
 include("options.jl")
-@options MadNLPOptions{Cdouble}
+#@options MadNLPOptions{Cdouble}
 @concrete_dict LS_DICT MadNLP.AbstractLinearSolver
 @concrete_dict KKT_DICT MadNLP.AbstractKKTSystem
 @concrete_dict CB_DICT MadNLP.AbstractCallback
+
+@opts_dict(MadNLPOptions{Cdouble}, MadNLPOptsDict)
 
 include("nlpmodels.jl")
 include("madnlp.jl")

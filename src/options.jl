@@ -291,7 +291,6 @@ function get_path_info(optstype::Type)
 
     while !isempty(worklist)
         ((path, guards), type) = popfirst!(worklist)
-        println("$(path), $(guards), $(type)")
         if type <: ConcreteOption
             push!(valid_paths, path => type)
             if !haskey(path_guards, path)
@@ -325,7 +324,7 @@ end
 
 function generate_guard(guard)
     if isempty(guard)
-        return :()
+        return :(true)
     elseif length(guard) == 1
         (path, type) = guard[1]
         return :(opts.dict[($(path)...,:TYPE)] == $(normalize_typename(type)))
@@ -358,19 +357,22 @@ end
 function generate_setter(opts_type, dict_type, leaf_type, valid_paths, path_guards, path_type_options)
     leaf_name = Symbol(lowercase(String(leaf_type.name.name)))
     opts_name = Symbol(lowercase(String(opts_type.name.name)))
+    checks = []
 
     for (path, type) in valid_paths
         ntype = normalize_type(type)
-        if normalize_type != leaf_type
+        if ntype != leaf_type
             continue
         end
-
-
+        push!(checks, generate_setter_check(path, path_guards[path], 10))
     end
 
     setter = quote
         Base.@ccallable function $(Symbol(opts_name,:_set_ ,leaf_name, :_option))(opts_ptr::Ptr{$(dict_type)}, name::Cstring, val::$(leaf_type))::Cint
-
+            opts = unsafe_load(opts_ptr)
+            path = Tuple(Symbol.(split(String(unsafe_string(name)[:]))))
+            $(checks...)
+            return Cint(1)
         end
     end
 
@@ -387,5 +389,14 @@ macro opts_dict(optstype_expr, optsdict_expr)
 
     normal_leaf_types = Set(normalize_type.(values(valid_paths)))
 
-    return esc(generate_setter(optstype, optsdict_expr, Int64, valid_paths, path_guards, path_type_options))
+    return esc(
+        quote
+            mutable struct $(optsdict_expr)
+                dict::Dict{Path, ConcreteOption}
+            end
+            $(generate_setter(optstype, optsdict_expr, Int64, valid_paths, path_guards, path_type_options))
+            #$(generate_setter(optstype, optsdict_expr, Float64, valid_paths, path_guards, path_type_options))
+            #$(generate_setter(optstype, optsdict_expr, Bool, valid_paths, path_guards, path_type_options))
+        end
+    )
 end
