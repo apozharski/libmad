@@ -15,7 +15,7 @@ end
 push!(function_sigs, """int nlpmodel_cpu_create(CNLPModel** nlp_ptr_ptr,
                                                 char* name,
                                                 long nvar, long ncon,
-                                                long nnzj, long nnzj,
+                                                long nnzj, long nnzh,
                                                 double* x0,
                                                 double* lvar, double* uvar,
                                                 double* lcon, double* ucon,
@@ -76,9 +76,9 @@ end
 
 
 function NLPModels.jac_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::AbstractVector{T}) where T
-    I_ = unsafe_convert(Ptr{Cint}, I)
-    J_ = unsafe_convert(Ptr{Cint}, J)
-    ret = ccall(nlp.jac_struct, Cint, (Ptr{Cint}, Ptr{Cint}, Ptr{Cvoid}), I_, J_, nlp.user_data)
+    I_ = Base.unsafe_convert(Ptr{Clong}, I)
+    J_ = Base.unsafe_convert(Ptr{Clong}, J)
+    ret = ccall(nlp.jac_struct, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}), I_, J_, nlp.user_data)
     if ret != Cint(0)
         throw(Exception("CallbackError jac_struct"))
     end
@@ -86,9 +86,9 @@ function NLPModels.jac_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::Abstr
 end
 
 function NLPModels.hess_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::AbstractVector{T}) where T
-    I_ = unsafe_convert(Ptr{Cint}, I)
-    J_ = unsafe_convert(Ptr{Cint}, J)
-    ret = ccall(nlp.jac_hess, Cint, (Ptr{Cint}, Ptr{Cint}, Ptr{Cvoid}), I_, J_, nlp.user_data)
+    I_ = Base.unsafe_convert(Ptr{Clong}, I)
+    J_ = Base.unsafe_convert(Ptr{Clong}, J)
+    ret = ccall(nlp.jac_hess, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}), I_, J_, nlp.user_data)
     if ret != Cint(0)
         throw(Exception("CallbackError jac_struct"))
     end
@@ -98,7 +98,7 @@ end
 function NLPModels.obj(nlp::CNLPModel, x::AbstractVector)
     x_::Ptr{Cdouble} = Base.unsafe_convert(Ptr{Cdouble}, x)
     f = Cdouble(0.0)
-    f_ = pointer_from_objref(f)
+    f_ = Ref(f)
     ret::Cint = ccall(nlp.eval_f, Cint, (Ptr{Cdouble},Ptr{Cdouble}, Ptr{Cvoid}), x_, f_, nlp.user_data)
     if ret != Cint(0)
         throw(Exception("CallbackError eval_f"))
