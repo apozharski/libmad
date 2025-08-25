@@ -8,7 +8,7 @@ libmad_refs::Dict{Ptr{Any}, Any} = Dict()
 
 include("options.jl")
 include("nlpmodels.jl")
-
+include("solver.jl")
 # MadNLP Solver interface definition
 # First define the possible types that any given `::Type` option can take.
 # This is important as it allows `--trim` to be smart about what types to keep
@@ -39,5 +39,7 @@ const madnlp_type_dict = Dict(
 
 @opts_dict(MadNLPOptions{Cdouble}, MadNLPOptsDict, madnlp_type_dict)
 
-include("madnlp.jl")
+# Now create solver interface
+@solver(madnlp, MadNLPSolver, MadNLPOptsDict)
+
 end # module libMad

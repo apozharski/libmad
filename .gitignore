@@ -31,3 +31,5 @@ JuliaLocalPreferences.toml
 *.so
 
 build/
+
+*~
