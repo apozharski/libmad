@@ -1,6 +1,7 @@
 using libMad
-opts = libMad.MadNLPOptsDict(Dict())
-opts_ptr = Ptr{libMad.MadNLPOptsDict}(pointer_from_objref(opts))
+opts_ptr_ptr = Ref{Ptr{libMad.MadNLPOptsDict}}(opts_ptr)
+libMad.madnlpoptions_create_options_struct(opts_ptr_ptr)
+
 name = Vector{Int8}([109,97,120,95,105,116,101,114,0]) # max_iter
 name_ptr = Cstring(pointer(name))
 val = Clong(10)

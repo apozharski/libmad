@@ -77,13 +77,13 @@ endif()
 add_custom_command(
   OUTPUT ${PROJECT_BINARY_DIR}/libMad.so
   COMMAND ${JULIA_EXECUTABLE} --project=${PROJECT_SOURCE_DIR} --startup-file=no ${JULIAC_EXECUTABLE} ${PROJECT_SOURCE_DIR}/src/libMad.jl --compile-ccallable --experimental --trim=no --output-lib ${PROJECT_BINARY_DIR}/libMad
+  DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
+  ${PROJECT_SOURCE_DIR}/src/options.jl
+  ${PROJECT_SOURCE_DIR}/src/madnlp.jl
+  ${PROJECT_SOURCE_DIR}/src/nlpmodels.jl
 )
 
 add_custom_target(
   libMad ALL
   DEPENDS ${PROJECT_BINARY_DIR}/libMad.so
-  SOURCES ${PROJECT_SOURCE_DIR}/src/libMad.jl
-  ${PROJECT_SOURCE_DIR}/src/options.jl
-  ${PROJECT_SOURCE_DIR}/src/madnlp.jl
-  ${PROJECT_SOURCE_DIR}/src/nlpmodels.jl
 )

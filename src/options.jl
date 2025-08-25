@@ -370,7 +370,7 @@ function generate_setter(opts_type, dict_type, leaf_type, valid_paths, path_guar
     setter = quote
         Base.@ccallable function $(Symbol(opts_name,:_set_ ,leaf_name, :_option))(opts_ptr::Ptr{$(dict_type)}, name::Cstring, val::$(leaf_type))::Cint
             opts = unsafe_load(opts_ptr)
-            path = Tuple(Symbol.(split(String(unsafe_string(name)[:]))))
+            path = Tuple(Symbol.(split(unsafe_string(name))))
             $(checks...)
             return Cint(1)
         end
@@ -383,20 +383,32 @@ end
 macro opts_dict(optstype_expr, optsdict_expr)
     # get type
     # TODO(@anton check if is subtype of AbstractOptions
-    optstype = eval(optstype_expr)
+    opts_type = eval(optstype_expr)
 
-    valid_paths, path_guards, path_type_options = get_path_info(optstype)
+    valid_paths, path_guards, path_type_options = get_path_info(opts_type)
 
     normal_leaf_types = Set(normalize_type.(values(valid_paths)))
+
+    opts_name = Symbol(lowercase(String(opts_type.name.name)))
 
     return esc(
         quote
             mutable struct $(optsdict_expr)
                 dict::Dict{Path, ConcreteOption}
             end
-            $(generate_setter(optstype, optsdict_expr, Int64, valid_paths, path_guards, path_type_options))
-            #$(generate_setter(optstype, optsdict_expr, Float64, valid_paths, path_guards, path_type_options))
-            #$(generate_setter(optstype, optsdict_expr, Bool, valid_paths, path_guards, path_type_options))
+
+            Base.@ccallable function $(Symbol(opts_name,:_create_options_struct))(opts_ptr::Ptr{Ptr{$(optsdict_expr)}})::Cint
+                dict = $(optsdict_expr)(Dict())
+                dict_ptr = Ptr{$(optsdict_expr)}(pointer_from_objref(dict))
+                libmad_refs[dict_ptr] = dict
+                unsafe_store!(opts_ptr, dict_ptr)
+
+                return Cint(0)
+            end
+            
+            $(generate_setter(opts_type, optsdict_expr, Int64, valid_paths, path_guards, path_type_options))
+            $(generate_setter(opts_type, optsdict_expr, Float64, valid_paths, path_guards, path_type_options))
+            $(generate_setter(opts_type, optsdict_expr, Bool, valid_paths, path_guards, path_type_options))
         end
     )
 end
