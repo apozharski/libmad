@@ -6,6 +6,10 @@ using NLPModels
 # Store of references to libMad objects, to prevent garbage collection.
 libmad_refs::Dict{Ptr{Any}, Any} = Dict()
 
+# Store of signatures for header generation
+function_sigs::Vector{String} = []
+dummy_structs::Vector{String} = []
+
 include("options.jl")
 include("nlpmodels.jl")
 include("solver.jl")

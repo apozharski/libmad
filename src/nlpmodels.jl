@@ -12,10 +12,25 @@ mutable struct CNLPModel{T, VT} <: AbstractNLPModel{T,VT}
     user_data::Ptr{Cvoid}
 end
 
+push!(function_sigs, """int nlpmodel_cpu_create(CNLPModel** nlp_ptr_ptr,
+                                                char* name,
+                                                long nvar, long ncon,
+                                                long nnzj, long nnzj,
+                                                double* x0,
+                                                double* lvar, double* uvar,
+                                                double* lcon, double* ucon,
+                                                void* jac_struct, void* hess_struct,
+                                                void* eval_f, void* eval_g,
+                                                void* eval_grad_f, void* eval_jac_g,
+                                                void* eval_h,
+                                                void* user_data)"""
+      )
+push!(dummy_structs, "CNLPModel")
+
 Base.@ccallable function nlpmodel_cpu_create(nlp_ptr_ptr::Ptr{Ptr{CNLPModel{Cdouble}}},
                                              name::Cstring,
-                                             nvar::Cint, ncon::Cint,
-                                             nnzj::Cint, nnzh::Cint,
+                                             nvar::Clong, ncon::Clong,
+                                             nnzj::Clong, nnzh::Clong,
                                              x0::Ptr{Cdouble},
                                              lvar::Ptr{Cdouble}, uvar::Ptr{Cdouble},
                                              lcon::Ptr{Cdouble}, ucon::Ptr{Cdouble},
@@ -36,7 +51,7 @@ Base.@ccallable function nlpmodel_cpu_create(nlp_ptr_ptr::Ptr{Ptr{CNLPModel{Cdou
         uvar = unsafe_wrap(Vector{Cdouble}, uvar, nvar),
         lcon = unsafe_wrap(Vector{Cdouble}, lcon, ncon),
         ucon = unsafe_wrap(Vector{Cdouble}, ucon, ncon),
-        name = String(name[1:findfirst(==(0x00), name)-1]),
+        name = unsafe_string(name),
         minimize = true
     )
 

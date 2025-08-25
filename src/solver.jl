@@ -1,4 +1,5 @@
 function generate_create_solver(solname, solver_expr, optsdict_expr)
+    push!(function_sigs, "int $(solname)_create_solver($(solver_expr)** solver_ptr_ptr, CNLPModel* nlp_ptr, $(optsdict_expr)* opts_ptr)")
     return quote
         Base.@ccallable function $(Symbol(solname, :_create_solver))(solver_ptr_ptr::Ptr{Ptr{$(solver_expr)}},
                                                     nlp_ptr::Ptr{CNLPModel{Cdouble}},
@@ -23,6 +24,7 @@ function generate_create_solver(solname, solver_expr, optsdict_expr)
 end
 
 function generate_solve(solname, solver_expr, optsdict_expr)
+    push!(function_sigs, "int $(solname)_solve($(solver_expr)* solver_ptr, $(optsdict_expr)* opts_ptr)")
     return quote
         Base.@ccallable function $(Symbol(solname, :_solve))(solver_ptr::Ptr{$(solver_expr)},
                                                              opts_ptr::Ptr{$(optsdict_expr)})::Cint
@@ -35,6 +37,7 @@ function generate_solve(solname, solver_expr, optsdict_expr)
 end
 
 macro solver(solname, solver_expr, optsdict_expr)
+    push!(dummy_structs, "$(solver_expr)")
     return esc(
         quote
             $(generate_create_solver(solname, solver_expr, optsdict_expr))

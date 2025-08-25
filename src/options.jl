@@ -377,6 +377,22 @@ function generate_string_setter_check(path, guards, errorcode)
     end
 end
 
+function to_c_name(type::Type)
+    if type == Int32
+        return "int"
+    elseif type == Int64
+        return "long"
+    elseif type == Float32
+        return "float"
+    elseif type == Float64
+        return "double"
+    elseif type == Bool
+        return "bool"
+    else
+        return "?????"
+    end
+end
+
 function generate_setter(opts_type, dict_type, leaf_type, valid_paths, path_guards, path_type_options)
     leaf_name = Symbol(lowercase(String(leaf_type.name.name)))
     opts_name = Symbol(lowercase(String(opts_type.name.name)))
@@ -398,7 +414,7 @@ function generate_setter(opts_type, dict_type, leaf_type, valid_paths, path_guar
             return Cint(1)
         end
     end
-
+    push!(function_sigs, "int $(opts_name)_set_$(leaf_name)_option($(dict_type)** opts_ptr, char* name, $(to_c_name(leaf_type)) val)")
     return setter
 end
 
@@ -422,7 +438,7 @@ function generate_string_setter(opts_type, dict_type, valid_paths, path_guards, 
             return Cint(1)
         end
     end
-
+    push!(function_sigs, "int $(opts_name)_set_string_option($(dict_type)** opts_ptr, char* name, char* val)")
     return setter
 end
 
@@ -506,6 +522,8 @@ macro opts_dict(optstype_expr, optsdict_expr, typedict_expr)
 
     opts_name = Symbol(lowercase(String(opts_type.name.name)))
 
+    push!(function_sigs, "int $(opts_name)_create_options_struct($(optsdict_expr)** opts_ptr)")
+    push!(dummy_structs, "$(optsdict_expr)")
     return esc(
         quote
             mutable struct $(optsdict_expr)
