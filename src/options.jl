@@ -12,6 +12,19 @@ const Guardss = Vector{Guards}
 const OptionWithGuards = Tuple{ConcreteOption, Guards}
 const PathWithGuards = Tuple{Path, Guards}
 
+function get_populated_subpaths!(dict::Dict{Path}, path::Path)
+    paths = Dict()
+    for key in keys(dict)
+        if length(key) <= length(path)
+            continue
+        end
+        if key[1:length(path)] == path
+            push!(paths, key[length(path)+1:end] => dict[key])
+            delete!(dict, key)
+        end
+    end
+    return paths
+end
 
 function dotchain(names)
     if isempty(names)
@@ -231,7 +244,7 @@ end
 
 macro concrete_dict(dictname, type)
     concrete_types = []
-    abstract_types = [eval(type)]
+    abstract_types = Vector{Any}([eval(type)])
     while !isempty(abstract_types)
         type = pop!(abstract_types)
         stypes = subtypes(type)
@@ -285,7 +298,7 @@ function get_path_info(optstype::Type)
     # Build set of valid tuples
     valid_paths = Dict{Path, Type}()
     path_guards = Dict{Path, Guardss}()
-    path_type_options = Dict{Path, Vector{Type}}()
+    path_type_options = Dict{Path, Dict{String,Type}}()
 
     worklist::Vector{Tuple{PathWithGuards, Type}} = [(((fname,), []),ftype) for (fname, ftype) in  zip(fnames,ftypes)]
 
@@ -304,7 +317,7 @@ function get_path_info(optstype::Type)
         else
             uts, cts = get_concrete_types(type)
             push!(valid_paths, (path..., :TYPE) => Type)
-            push!(path_type_options, path => uts)
+            push!(path_type_options, path => Dict([(String(nameof(ut)),ut) for ut in uts]))
             if !haskey(path_guards, (path..., :TYPE))
                 push!(path_guards, (path..., :TYPE) => [])
             end
@@ -354,6 +367,16 @@ function generate_setter_check(path, guards, errorcode)
     end
 end
 
+function generate_string_setter_check(path, guards, errorcode)
+    return quote
+        if path == $(path)
+            $(generate_guards(guards, errorcode))
+            opts.dict[path] = copy(unsafe_string(val))
+            return Cint(0)
+        end
+    end
+end
+
 function generate_setter(opts_type, dict_type, leaf_type, valid_paths, path_guards, path_type_options)
     leaf_name = Symbol(lowercase(String(leaf_type.name.name)))
     opts_name = Symbol(lowercase(String(opts_type.name.name)))
@@ -379,15 +402,107 @@ function generate_setter(opts_type, dict_type, leaf_type, valid_paths, path_guar
     return setter
 end
 
+function generate_string_setter(opts_type, dict_type, valid_paths, path_guards, path_type_options)
+    opts_name = Symbol(lowercase(String(opts_type.name.name)))
+    checks = []
+
+    for (path, type) in valid_paths
+        ntype = normalize_type(type)
+        if ntype != String
+            continue
+        end
+        push!(checks, generate_string_setter_check(path, path_guards[path], 10))
+    end
+
+    setter = quote
+        Base.@ccallable function $(Symbol(opts_name,:_set_string_option))(opts_ptr::Ptr{$(dict_type)}, name::Cstring, val::Cstring)::Cint
+            opts = unsafe_load(opts_ptr)
+            path = Tuple(Symbol.(split(unsafe_string(name))))
+            $(checks...)
+            return Cint(1)
+        end
+    end
+
+    return setter
+end
+
+function generate_string_to_type_suboptions_checks(path_type_options)
+    checks = []
+    for (path, typedict) in path_type_options
+        for (tstring, type) in typedict
+            check = quote
+                if path == $(path) && type == $(tstring)
+                    push!(params, path => $(type)(subpaths...))
+                end
+            end
+            push!(checks, check)
+        end
+    end
+    return quote
+        $(checks...)
+    end
+end
+
+function generate_string_to_type_checks(typedict_expr)
+    typedictdict = eval(typedict_expr) # get actual dict?
+    checks = []
+    for (path, typedict) in typedictdict
+        for (tstring, type) in typedict
+            check = quote
+                if path == $(path) && val == $(tstring)
+                    params[path] = $(type)
+                end
+            end
+            push!(checks, check)
+        end
+    end
+    return quote
+        $(checks...)
+    end
+end
+
+function generate_to_parameters(opts_type, optsdict_expr, typedict_expr, path_type_options)
+    opts_name = Symbol(lowercase(String(opts_type.name.name)))
+    # TODO(@anton) I think the path compression could be done at compile time instead of searching at runtime,
+    #              however I think this is unimportant for now.
+    # TODO(@anton) This breaks if you have nested abstract options types. But fixing this is a huge pain.
+    #              We need to think about restricting the interface.
+    # TODO(@anton) This currently defers errors to the solver call if the types passed are wrong.
+    to_params = quote
+        function _to_parameters(opts::$(optsdict_expr))
+            # Takes a dict and walks it to create a flat dict with the proper types
+            path_type_options = $(path_type_options)
+            params = Dict(opts.dict)
+            # Process sub-options structs
+            for (path, typedict) in path_type_options
+                subpaths = get_populated_subpaths!(params, path)
+                if !haskey(subpaths, (:TYPE,))
+                    # TODO(@anton) warn?
+                    #@warn "Missing TYPE for $(path)"
+                    continue
+                end
+                type = subpaths[(:TYPE,)]
+                delete!(subpaths, (:TYPE,))
+                $(generate_string_to_type_suboptions_checks(path_type_options))
+            end
+            # Process `::Type` options
+            for (path, val) in params
+                $(generate_string_to_type_checks(typedict_expr))
+            end
+            return params
+        end
+    end
+end
+
 # Generate opts dict and opts dict interface for
-macro opts_dict(optstype_expr, optsdict_expr)
+macro opts_dict(optstype_expr, optsdict_expr, typedict_expr)
     # get type
     # TODO(@anton check if is subtype of AbstractOptions
     opts_type = eval(optstype_expr)
 
     valid_paths, path_guards, path_type_options = get_path_info(opts_type)
 
-    normal_leaf_types = Set(normalize_type.(values(valid_paths)))
+    norm_leaf_types = Set(normalize_type.(values(valid_paths)))
 
     opts_name = Symbol(lowercase(String(opts_type.name.name)))
 
@@ -409,6 +524,8 @@ macro opts_dict(optstype_expr, optsdict_expr)
             $(generate_setter(opts_type, optsdict_expr, Int64, valid_paths, path_guards, path_type_options))
             $(generate_setter(opts_type, optsdict_expr, Float64, valid_paths, path_guards, path_type_options))
             $(generate_setter(opts_type, optsdict_expr, Bool, valid_paths, path_guards, path_type_options))
+            $(generate_string_setter(opts_type, optsdict_expr, valid_paths, path_guards, path_type_options))
+            $(generate_to_parameters(opts_type, optsdict_expr, typedict_expr, path_type_options))
         end
     )
 end
