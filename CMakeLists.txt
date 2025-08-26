@@ -63,6 +63,7 @@ if(NOT DEFINED JULIA_BINDIR)
     set(JULIA_BINDIR "${JULIA_BINDIR_LOCAL}" CACHE PATH "")
 endif()
 get_filename_component(JULIA_PATH_PREFIX "${JULIA_BINDIR}" DIRECTORY)
+set(JULIA_INCLUDE_DIR ${JULIA_PATH_PREFIX}/include/julia)
 
 message(CHECK_START "Find juliac.jl")
 # TODO is this consistent? for now it is
@@ -72,7 +73,6 @@ if(NOT JULIAC_EXECUTABLE)
 else()
   message(CHECK_PASS "juliac.jl found")
 endif()
-
 
 add_custom_command(
   OUTPUT ${PROJECT_BINARY_DIR}/libMad.so
@@ -95,7 +95,21 @@ add_custom_command(
 )
 
 add_custom_target(
-  libMad ALL
+  libMad_target ALL
   DEPENDS ${PROJECT_BINARY_DIR}/libMad.so
   ${PROJECT_BINARY_DIR}/libMad.h
 )
+
+add_library(libMad SHARED IMPORTED GLOBAL)
+add_dependencies(libMad libMad_target)
+
+set_target_properties(libMad
+  PROPERTIES
+  IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/libMad.so
+)
+
+target_include_directories(libMad INTERFACE ${PROJECT_BINARY_DIR} ${JULIA_INCLUDE_DIR})
+
+add_executable(basic_problem ${PROJECT_SOURCE_DIR}/examples/basic_problem.c)
+
+target_link_libraries(basic_problem libMad)

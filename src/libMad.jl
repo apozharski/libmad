@@ -4,7 +4,7 @@ using MadNLP
 using NLPModels
 
 # Store of references to libMad objects, to prevent garbage collection.
-libmad_refs::Dict{Ptr{Any}, Any} = Dict()
+libmad_refs::Dict = Dict()
 
 # Store of signatures for header generation
 function_sigs::Vector{String} = []
@@ -45,5 +45,7 @@ const madnlp_type_dict = Dict(
 
 # Now create solver interface
 @solver(madnlp, MadNLPSolver, MadNLPOptsDict)
+
+# TODO(@anton) precompile commands
 
 end # module libMad

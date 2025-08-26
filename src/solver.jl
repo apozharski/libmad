@@ -6,11 +6,11 @@ function generate_create_solver(solname, solver_expr, optsdict_expr)
                                                     opts_ptr::Ptr{$(optsdict_expr)}
                                                     )::Cint
 
-            nlp = unsafe_load(nlp_ptr)
-            opts = unsafe_load(opts_ptr)
+            nlp = unsafe_pointer_to_objref(nlp_ptr)
+            opts = unsafe_pointer_to_objref(opts_ptr)
 
             solver = $(solver_expr)(nlp;
-                                    _to_parameter(opts)...
+                                    _to_parameters(opts)...
                                    )
 
             solver_ptr = pointer_from_objref(solver)
@@ -28,10 +28,12 @@ function generate_solve(solname, solver_expr, optsdict_expr)
     return quote
         Base.@ccallable function $(Symbol(solname, :_solve))(solver_ptr::Ptr{$(solver_expr)},
                                                              opts_ptr::Ptr{$(optsdict_expr)})::Cint
-            solver = unsafe_load(solver_ptr)
-            opts = unsafe_load(opts_ptr)
+            solver = unsafe_pointer_to_objref(solver_ptr)
+            opts = unsafe_pointer_to_objref(opts_ptr)
 
-            stats = solve!(solver; _to_parameter(opts)...)
+            stats = solve!(solver; _to_parameters(opts)...)
+
+            return Cint(0)
         end
     end
 end

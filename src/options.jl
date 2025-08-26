@@ -408,13 +408,13 @@ function generate_setter(opts_type, dict_type, leaf_type, valid_paths, path_guar
 
     setter = quote
         Base.@ccallable function $(Symbol(opts_name,:_set_ ,leaf_name, :_option))(opts_ptr::Ptr{$(dict_type)}, name::Cstring, val::$(leaf_type))::Cint
-            opts = unsafe_load(opts_ptr)
+            opts = unsafe_pointer_to_objref(opts_ptr)
             path = Tuple(Symbol.(split(unsafe_string(name))))
             $(checks...)
             return Cint(1)
         end
     end
-    push!(function_sigs, "int $(opts_name)_set_$(leaf_name)_option($(dict_type)** opts_ptr, char* name, $(to_c_name(leaf_type)) val)")
+    push!(function_sigs, "int $(opts_name)_set_$(leaf_name)_option($(dict_type)* opts_ptr, char* name, $(to_c_name(leaf_type)) val)")
     return setter
 end
 
@@ -432,13 +432,13 @@ function generate_string_setter(opts_type, dict_type, valid_paths, path_guards, 
 
     setter = quote
         Base.@ccallable function $(Symbol(opts_name,:_set_string_option))(opts_ptr::Ptr{$(dict_type)}, name::Cstring, val::Cstring)::Cint
-            opts = unsafe_load(opts_ptr)
+            opts = unsafe_pointer_to_objref(opts_ptr)
             path = Tuple(Symbol.(split(unsafe_string(name))))
             $(checks...)
             return Cint(1)
         end
     end
-    push!(function_sigs, "int $(opts_name)_set_string_option($(dict_type)** opts_ptr, char* name, char* val)")
+    push!(function_sigs, "int $(opts_name)_set_string_option($(dict_type)* opts_ptr, char* name, char* val)")
     return setter
 end
 
@@ -505,7 +505,12 @@ function generate_to_parameters(opts_type, optsdict_expr, typedict_expr, path_ty
             for (path, val) in params
                 $(generate_string_to_type_checks(typedict_expr))
             end
-            return params
+            params_out = Dict()
+            for (path, val) in params
+                # TODO(@anton) check that path is length one
+                params_out[path[1]] = val
+            end
+            return params_out
         end
     end
 end

@@ -66,8 +66,8 @@ Base.@ccallable function nlpmodel_cpu_create(nlp_ptr_ptr::Ptr{Ptr{CNLPModel{Cdou
         eval_h,
         user_data
     )
-    nlp_ptr = pointer_from_objref(nlp)
-    nlp_ptr_ptr[] = nlp_ptr
+    nlp_ptr = Ptr{CNLPModel{Cdouble}}(pointer_from_objref(nlp))
+    unsafe_store!(nlp_ptr_ptr, nlp_ptr)
     libmad_refs[nlp_ptr] = nlp
 
     return Cint(0)
@@ -87,7 +87,7 @@ end
 function NLPModels.hess_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::AbstractVector{T}) where T
     I_ = Base.unsafe_convert(Ptr{Clong}, I)
     J_ = Base.unsafe_convert(Ptr{Clong}, J)
-    ret = ccall(nlp.jac_hess, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}), I_, J_, nlp.user_data)
+    ret = ccall(nlp.hess_struct, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}), I_, J_, nlp.user_data)
     if ret != Cint(0)
         throw(Exception("CallbackError jac_struct"))
     end
@@ -96,13 +96,13 @@ end
 
 function NLPModels.obj(nlp::CNLPModel, x::AbstractVector)
     x_::Ptr{Cdouble} = Base.unsafe_convert(Ptr{Cdouble}, x)
-    f = Cdouble(0.0)
-    f_ = Ref(f)
-    ret::Cint = ccall(nlp.eval_f, Cint, (Ptr{Cdouble},Ptr{Cdouble}, Ptr{Cvoid}), x_, f_, nlp.user_data)
+    f = Vector{Cdouble}([0.0])
+    ret::Cint = ccall(nlp.eval_f, Cint, (Ptr{Cdouble},Ptr{Cdouble}, Ptr{Cvoid}), x_, f, nlp.user_data)
     if ret != Cint(0)
         throw(Exception("CallbackError eval_f"))
     end
-    return f
+    println(f)
+    return f[1]
 end
 
 function NLPModels.cons!(nlp::CNLPModel, x::AbstractVector, c::AbstractVector)
