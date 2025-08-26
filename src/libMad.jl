@@ -48,7 +48,7 @@ const madnlp_type_dict = Dict(
 # Now create solver interface
 @solver(madnlp, MadNLPSolver, MadNLPOptsDict)
 
-include("madnlp/workload.jl")
+#include("madnlp/workload.jl")
 # TODO(@anton) precompile commands
 # precompile(MadNLP.solve!, (MadNLP.MadNLPSolver{Cdouble},))
 # precompile(MadNLP.initialize!, (MadNLP.MadNLPSolver{Cdouble},))
