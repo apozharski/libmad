@@ -371,7 +371,7 @@ function generate_string_setter_check(path, guards, errorcode)
     return quote
         if path == $(path)
             $(generate_guards(guards, errorcode))
-            opts.dict[path] = copy(unsafe_string(val))
+            opts.dict[path] = unsafe_string(val)[:]
             return Cint(0)
         end
     end

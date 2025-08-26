@@ -64,6 +64,7 @@ int main(int argc, char** argv)
   CNLPModel* nlp_ptr;
   MadNLPOptsDict* opts_ptr;
   MadNLPSolver* solver_ptr;
+  MadNLPSolver* solver2_ptr;
 
   double* x0 = malloc(2*sizeof(double));
   x0[0] = 0; x0[1] = 0;
@@ -91,6 +92,8 @@ int main(int argc, char** argv)
   madnlpoptions_create_options_struct(&opts_ptr);
 	madnlpoptions_set_float64_option(opts_ptr, "tol", 1e-3);
   madnlp_create_solver(&solver_ptr, nlp_ptr, opts_ptr);
+  madnlp_create_solver(&solver2_ptr, nlp_ptr, opts_ptr);
   madnlp_solve(solver_ptr, opts_ptr);
+  madnlp_solve(solver2_ptr, opts_ptr);
   return 0;
 }

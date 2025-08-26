@@ -7,7 +7,9 @@ authors = ["Anton Edvinovich Pozharskiy <anton.pozharskiy@imtek.uni-freiburg.de>
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 MadNLP = "2621e9c9-9eb4-46b1-8089-e8c72242dfb6"
 NLPModels = "a4795742-8479-5a88-8948-cc11e1c8c1a6"
+PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
 
 [compat]
 InteractiveUtils = "1.11.0"
 NLPModels = "0.21.5"
+PrecompileTools = "1.3.2"

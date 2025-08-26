@@ -101,7 +101,6 @@ function NLPModels.obj(nlp::CNLPModel, x::AbstractVector)
     if ret != Cint(0)
         throw(Exception("CallbackError eval_f"))
     end
-    println(f)
     return f[1]
 end
 

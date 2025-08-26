@@ -5,7 +5,6 @@ function generate_create_solver(solname, solver_expr, optsdict_expr)
                                                     nlp_ptr::Ptr{CNLPModel{Cdouble}},
                                                     opts_ptr::Ptr{$(optsdict_expr)}
                                                     )::Cint
-
             nlp = unsafe_pointer_to_objref(nlp_ptr)
             opts = unsafe_pointer_to_objref(opts_ptr)
 

@@ -2,6 +2,8 @@ module libMad
 using InteractiveUtils
 using MadNLP
 using NLPModels
+using PrecompileTools: @setup_workload, @compile_workload
+using Base: unsafe_convert
 
 # Store of references to libMad objects, to prevent garbage collection.
 libmad_refs::Dict = Dict()
@@ -46,6 +48,16 @@ const madnlp_type_dict = Dict(
 # Now create solver interface
 @solver(madnlp, MadNLPSolver, MadNLPOptsDict)
 
+include("madnlp/workload.jl")
 # TODO(@anton) precompile commands
+# precompile(MadNLP.solve!, (MadNLP.MadNLPSolver{Cdouble},))
+# precompile(MadNLP.initialize!, (MadNLP.MadNLPSolver{Cdouble},))
+# precompile(MadNLP.solve!, (CNLPModel{Cdouble, Vector{Cdouble}},
+#                            MadNLP.MadNLPSolver{Cdouble},
+#                            MadNLP.MadNLPExecutionStats{Cdouble,Vector{Cdouble}},))
+
+# precompile(MadNLP.regular!, (MadNLP.MadNLPSolver{Cdouble},))
+# precompile(MadNLP.restore!, (MadNLP.MadNLPSolver{Cdouble},))
+# precompile(MadNLP.robust!, (MadNLP.MadNLPSolver{Cdouble},))
 
 end # module libMad
