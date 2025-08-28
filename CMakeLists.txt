@@ -76,7 +76,7 @@ endif()
 
 add_custom_command(
   OUTPUT ${PROJECT_BINARY_DIR}/libMad.so
-  COMMAND juliac --project ${PROJECT_SOURCE_DIR} --compile-ccallable --verbose --experimental --trim=no --output-lib ${PROJECT_BINARY_DIR}/libMad ${PROJECT_SOURCE_DIR}/src/libMad.jl
+  COMMAND juliac --project ${PROJECT_SOURCE_DIR} --compile-ccallable --verbose --experimental --trim=no --output-lib ${PROJECT_BINARY_DIR}/libMad ${PROJECT_SOURCE_DIR}/src/recipe.jl
   DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
   ${PROJECT_SOURCE_DIR}/src/options.jl
   ${PROJECT_SOURCE_DIR}/src/solver.jl

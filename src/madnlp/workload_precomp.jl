@@ -29,41 +29,26 @@ end
 
 function _eval_f!(w::Vector{T}, f::Vector{T}) where T
 	  f[1] = (a-w[1])^2 + b*(w[2]-w[1]^2)^2
-    println("eval_f")
-    println(w)
-    println(f)
 end
 
 function _eval_g!(w::Vector{T}, g::Vector{T}) where T
 	  g[1] = w[1]^2 + w[2]^2 - 1
-    println("eval_g")
-    println(w)
-    println(g)
 end
 
 function _eval_jac_g!(w::Vector{T}, jac_g::Vector{T}) where T
     jac_g[1] = 2*w[1]
     jac_g[2] = 2*w[2]
-    println("eval_jac_j")
-    println(w)
-    println(jac_g)
 end
 
 function _eval_grad_f!(w::Vector{T}, g::Vector{T}) where T
     g[1] = -4*b*w[1]*(w[2]-w[1]^2)-2*(a-w[1])
     g[2] = b*2*(w[2]-w[1]^2)
-    println("eval_grad_f")
-    println(w)
-    println(g)
 end
 
 function _eval_h!(w::Vector{T},l::Vector{T}, h::Vector{T}) where T
     h[1] = (+2 -4*b*w[2] +12*b*w[1]^2)
     h[2] = (-4*b*w[1])
     h[3] = (2*b)
-    println("eval_h")
-    println(w)
-    println(h)
 end
 
 function jac_struct(I::Ptr{Clong}, J::Ptr{Clong}, d::Ptr{Cvoid})::Cint
@@ -115,6 +100,7 @@ function eval_h(obj_scale::Cdouble, Cw::Ptr{Cdouble}, Cl::Ptr{Cdouble}, Chess::P
     _eval_h!(w,l,hess)
     return Cint(0)
 end
+
 @setup_workload begin
     c_jac_struct = @cfunction(jac_struct, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}))
     c_hess_struct = @cfunction(hess_struct, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}))
@@ -140,43 +126,49 @@ end
     uvar = Vector{Cdouble}([Inf, Inf])
     lcon = Vector{Cdouble}([0.0])
     ucon = Vector{Cdouble}([0.0])
-    @compile_workload begin
+    for ls in keys(LS_DICT)
+        for kkt in keys(KKT_DICT)
+            GC.@preserve x0 lvar uvar lcon ucon begin
+                @compile_workload begin
 
+                    _name = "aname"
+                    libMad.nlpmodel_cpu_create(nlp_ptr_ptr,
+                                               unsafe_convert(Cstring,_name),
+                                               nvar, ncon,
+                                               2, 3,
+                                               pointer(x0),
+                                               pointer(lvar), pointer(uvar),
+                                               pointer(lcon), pointer(ucon),
+                                               c_jac_struct, c_hess_struct,
+                                               c_eval_f, c_eval_g,
+                                               c_eval_grad_f, c_eval_jac_g,
+                                               c_eval_h,
+                                               C_NULL
+                                               )
+                    nlp_ptr = nlp_ptr_vec[1]
+                    libMad.madnlpoptions_create_options_struct(opts_ptr_ptr)
+                    opts_ptr = opts_ptr_vec[1]
 
-        println("pointer at execute $(pointer(x0))")
+                    _tol = "tol"
+                    _max_iter = "max_iter"
+                    _print_level = "print_level"
+                    _callback = "callback"
+                    _linear_solver = "linear_solver"
+                    _SparseCallback = "SparseCallback"
+                    _hessian_constant = "hessian_constant"
+                    libMad.madnlpoptions_set_float64_option(opts_ptr, unsafe_convert(Cstring,_tol), Cdouble(1e-6))
+                    libMad.madnlpoptions_set_int64_option(opts_ptr, unsafe_convert(Cstring,_max_iter), 2000)
+                    #madnlpoptions_set_int64_option(opts_ptr, unsafe_convert(Cstring,_print_level), 1)
+                    libMad.madnlpoptions_set_string_option(opts_ptr, unsafe_convert(Cstring,_callback), unsafe_convert(Cstring,_SparseCallback))
+                    libMad.madnlpoptions_set_string_option(opts_ptr, unsafe_convert(Cstring,_linear_solver), unsafe_convert(Cstring,ls))
+                    libMad.madnlpoptions_set_bool_option(opts_ptr, unsafe_convert(Cstring,_hessian_constant), false)
 
-        _name = "aname"
-        libMad.nlpmodel_cpu_create(nlp_ptr_ptr,
-                                   unsafe_convert(Cstring,_name),
-                                   nvar, ncon,
-                                   2, 3,
-                                   pointer(x0),
-                                   pointer(lvar), pointer(uvar),
-                                   pointer(lcon), pointer(ucon),
-                                   c_jac_struct, c_hess_struct,
-                                   c_eval_f, c_eval_g,
-                                   c_eval_grad_f, c_eval_jac_g,
-                                   c_eval_h,
-                                   C_NULL
-                                   )
-        nlp_ptr = nlp_ptr_vec[1]
-        libMad.madnlpoptions_create_options_struct(opts_ptr_ptr)
-        opts_ptr = opts_ptr_vec[1]
-
-        _tol = "tol"
-        _max_iter = "max_iter"
-        _print_level = "print_level"
-        _callback = "callback"
-        _SparseCallback = "SparseCallback"
-        _hessian_constant = "hessian_constant"
-        libMad.madnlpoptions_set_float64_option(opts_ptr, unsafe_convert(Cstring,_tol), Cdouble(1e-6))
-        libMad.madnlpoptions_set_int64_option(opts_ptr, unsafe_convert(Cstring,_max_iter), 2000)
-        #madnlpoptions_set_int64_option(opts_ptr, unsafe_convert(Cstring,_print_level), 1)
-        libMad.madnlpoptions_set_string_option(opts_ptr, unsafe_convert(Cstring,_callback), unsafe_convert(Cstring,_SparseCallback))
-        libMad.madnlpoptions_set_bool_option(opts_ptr, unsafe_convert(Cstring,_hessian_constant), false)
-
-        libMad.madnlp_create_solver(solver_ptr_ptr, nlp_ptr, opts_ptr)
-        solver_ptr = solver_ptr_vec[1]
-        libMad.madnlp_solve(solver_ptr, opts_ptr)
+                    println(Base.load_path())
+                    libMad.madnlp_create_solver(solver_ptr_ptr, nlp_ptr, opts_ptr)
+                    solver_ptr = solver_ptr_vec[1]
+                    libMad.madnlp_solve(solver_ptr, opts_ptr)
+                end
+            end
+        end
     end
 end
