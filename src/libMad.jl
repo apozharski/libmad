@@ -4,6 +4,7 @@ using MadNLP
 using NLPModels
 using PrecompileTools: @setup_workload, @compile_workload, verbose
 using Base: unsafe_convert
+using SolverCore
 
 # Store of references to libMad objects, to prevent garbage collection.
 libmad_refs::Dict = Dict()
@@ -15,6 +16,7 @@ dummy_structs::Vector{String} = []
 include("options.jl")
 include("nlpmodels.jl")
 include("solver.jl")
+include("stats.jl")
 # MadNLP Solver interface definition
 # First define the possible types that any given `::Type` option can take.
 # This is important as it allows `--trim` to be smart about what types to keep
@@ -45,9 +47,15 @@ const madnlp_type_dict = Dict(
 
 @opts_dict(MadNLPOptions{Cdouble}, MadNLPOptsDict, madnlp_type_dict)
 
+# Create stats
+@stats(madnlp, MadNLPExecutionStats)
+
 # Now create solver interface
 @solver(madnlp, MadNLPSolver, MadNLPOptsDict)
 
+include("madnlp/stats.jl")
+
+# Precompile workload for madnlp
 include("madnlp/workload_precomp.jl")
 
 end # module libMad
