@@ -104,5 +104,8 @@ int main(int argc, char** argv)
   madnlp_solve(solver1_ptr, opts1_ptr);
   madnlp_solve(solver2_ptr, opts2_ptr);
   madnlp_solve(solver3_ptr, opts3_ptr);
+	madnlp_delete_solver(solver1_ptr);
+	madnlp_delete_solver(solver2_ptr);
+	madnlp_delete_solver(solver3_ptr);
   return 0;
 }

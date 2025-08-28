@@ -163,10 +163,10 @@ end
                     libMad.madnlpoptions_set_string_option(opts_ptr, unsafe_convert(Cstring,_linear_solver), unsafe_convert(Cstring,ls))
                     libMad.madnlpoptions_set_bool_option(opts_ptr, unsafe_convert(Cstring,_hessian_constant), false)
 
-                    println(Base.load_path())
                     libMad.madnlp_create_solver(solver_ptr_ptr, nlp_ptr, opts_ptr)
                     solver_ptr = solver_ptr_vec[1]
                     libMad.madnlp_solve(solver_ptr, opts_ptr)
+                    libMad.madnlp_delete_solver(solver_ptr)
                 end
             end
         end

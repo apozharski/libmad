@@ -22,6 +22,23 @@ function generate_create_solver(solname, solver_expr, optsdict_expr)
     end
 end
 
+function generate_delete_solver(solname, solver_expr, optsdict_expr)
+    push!(function_sigs, "int $(solname)_delete_solver($(solver_expr)* solver_ptr_ptr)")
+    return quote
+        Base.@ccallable function $(Symbol(solname, :_delete_solver))(solver_ptr::Ptr{$(solver_expr)})::Cint
+            if haskey(libmad_refs, solver_ptr)
+                delete!(libmad_refs, solver_ptr)
+                return Cint(0)
+            else
+                return Cint(1)
+            end
+
+        end
+
+    end
+end
+
+
 function generate_solve(solname, solver_expr, optsdict_expr)
     push!(function_sigs, "int $(solname)_solve($(solver_expr)* solver_ptr, $(optsdict_expr)* opts_ptr)")
     return quote
@@ -42,6 +59,7 @@ macro solver(solname, solver_expr, optsdict_expr)
     return esc(
         quote
             $(generate_create_solver(solname, solver_expr, optsdict_expr))
+            $(generate_delete_solver(solname, solver_expr, optsdict_expr))
             $(generate_solve(solname, solver_expr, optsdict_expr))
         end
     )
