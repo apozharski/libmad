@@ -51,7 +51,7 @@ const madnlp_type_dict = Dict(
 @stats(madnlp, MadNLPExecutionStats)
 
 # Now create solver interface
-@solver(madnlp, MadNLPSolver, MadNLPOptsDict)
+@solver(madnlp, MadNLPSolver, MadNLPOptsDict, MadNLPExecutionStats)
 
 include("madnlp/stats.jl")
 

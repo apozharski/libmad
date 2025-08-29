@@ -110,6 +110,7 @@ end
     c_eval_jac_g = @cfunction(eval_jac_g, Cint, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}))
     c_eval_h = @cfunction(eval_h, Cint, (Cdouble, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}))
 
+    # Structures
     opts_ptr_vec = Vector{Ptr{libMad.MadNLPOptsDict}}([C_NULL])
     opts_ptr = opts_ptr_vec[1]
     opts_ptr_ptr = pointer(opts_ptr_vec)
@@ -119,6 +120,17 @@ end
     solver_ptr_vec = Vector{Ptr{MadNLP.MadNLPSolver}}([C_NULL])
     solver_ptr = solver_ptr_vec[1]
     solver_ptr_ptr = pointer(solver_ptr_vec)
+    stats_ptr_vec = Vector{Ptr{MadNLP.MadNLPExecutionStats}}([C_NULL])
+    stats_ptr = stats_ptr_vec[1]
+    stats_ptr_ptr = pointer(stats_ptr_vec)
+
+    o_success = Vector{Cuchar}([false])
+    o_obj = Vector{Cdouble}(undef, 1)
+    o_solution = Vector{Cdouble}(undef, 2)
+    o_multipliers_L = Vector{Cdouble}(undef, 2)
+    o_multipliers_U = Vector{Cdouble}(undef, 2)
+    o_constraints = Vector{Cdouble}(undef, 1)
+    o_multipliers = Vector{Cdouble}(undef, 1)
 
     x0 = Vector{Cdouble}([1.0, 1.0])
     println(x0)
@@ -165,7 +177,25 @@ end
 
                     libMad.madnlp_create_solver(solver_ptr_ptr, nlp_ptr, opts_ptr)
                     solver_ptr = solver_ptr_vec[1]
-                    libMad.madnlp_solve(solver_ptr, opts_ptr)
+                    libMad.madnlp_solve(solver_ptr, opts_ptr, stats_ptr_ptr)
+                    stats_ptr = stats_ptr_vec[1]
+
+                    libMad.madnlp_get_success(stats_ptr, pointer(o_success))
+                    libMad.madnlp_get_obj(stats_ptr, pointer(o_obj))
+                    libMad.madnlp_get_solution(stats_ptr, pointer(o_solution))
+                    libMad.madnlp_get_multipliers(stats_ptr, pointer(o_multipliers))
+                    libMad.madnlp_get_constraints(stats_ptr, pointer(o_constraints))
+                    libMad.madnlp_get_multipliers_L(stats_ptr, pointer(o_multipliers_L))
+                    libMad.madnlp_get_multipliers_U(stats_ptr, pointer(o_multipliers_U))
+
+                    println("success: $(o_success)")
+                    println("obj: $(o_obj)")
+                    println("solution: $(o_solution)")
+                    println("multipliers: $(o_multipliers)")
+                    println("constraints: $(o_constraints)")
+                    println("multipliers_U: $(o_multipliers_U)")
+                    println("multipliers_L: $(o_multipliers_L)")
+
                     libMad.madnlp_delete_solver(solver_ptr)
                 end
             end

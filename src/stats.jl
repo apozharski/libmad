@@ -23,7 +23,7 @@ function generate_stats_getters(solname, stats_expr)
     _obj = quote
         Base.@ccallable function $(Symbol(solname, :_get_obj))(stats_ptr::Ptr{$(stats_expr)}, out::Ptr{Cdouble})::Cint
             stats = unsafe_pointer_to_objref(stats_ptr)
-            unsafe_store(out, obj(stats))
+            unsafe_store!(out, obj(stats))
             return Cint(0)
         end
     end
@@ -32,7 +32,8 @@ function generate_stats_getters(solname, stats_expr)
     _solution = quote
         Base.@ccallable function $(Symbol(solname, :_get_solution))(stats_ptr::Ptr{$(stats_expr)}, out::Ptr{Cdouble})::Cint
             stats = unsafe_pointer_to_objref(stats_ptr)
-            unsafe_store(out, solution(stats), get_n(stats))
+            out_arr = unsafe_wrap(Vector{Cdouble}, out, get_n(stats))
+            out_arr .= solution(stats)
             return Cint(0)
         end
     end
@@ -41,7 +42,8 @@ function generate_stats_getters(solname, stats_expr)
     _constraints = quote
         Base.@ccallable function $(Symbol(solname, :_get_constraints))(stats_ptr::Ptr{$(stats_expr)}, out::Ptr{Cdouble})::Cint
             stats = unsafe_pointer_to_objref(stats_ptr)
-            unsafe_store(out, constraints(stats), get_m(stats))
+            out_arr = unsafe_wrap(Vector{Cdouble}, out, get_m(stats))
+            out_arr .= constraints(stats)
             return Cint(0)
         end
     end
@@ -50,7 +52,8 @@ function generate_stats_getters(solname, stats_expr)
     _multipliers = quote
         Base.@ccallable function $(Symbol(solname, :_get_multipliers))(stats_ptr::Ptr{$(stats_expr)}, out::Ptr{Cdouble})::Cint
             stats = unsafe_pointer_to_objref(stats_ptr)
-            unsafe_store(out, multipliers(stats), get_m(stats))
+            out_arr = unsafe_wrap(Vector{Cdouble}, out, get_m(stats))
+            out_arr .= multipliers(stats)
             return Cint(0)
         end
     end
@@ -59,7 +62,8 @@ function generate_stats_getters(solname, stats_expr)
     _multipliers_L = quote
         Base.@ccallable function $(Symbol(solname, :_get_multipliers_L))(stats_ptr::Ptr{$(stats_expr)}, out::Ptr{Cdouble})::Cint
             stats = unsafe_pointer_to_objref(stats_ptr)
-            unsafe_store(out, multipliers_L(stats), get_n(stats))
+            out_arr = unsafe_wrap(Vector{Cdouble}, out, get_n(stats))
+            out_arr .= multipliers_L(stats)
             return Cint(0)
         end
     end
@@ -68,16 +72,17 @@ function generate_stats_getters(solname, stats_expr)
     _multipliers_U = quote
         Base.@ccallable function $(Symbol(solname, :_get_multipliers_U))(stats_ptr::Ptr{$(stats_expr)}, out::Ptr{Cdouble})::Cint
             stats = unsafe_pointer_to_objref(stats_ptr)
-            unsafe_store(out, multipliers_U(stats), get_n(stats))
+            out_arr = unsafe_wrap(Vector{Cdouble}, out, get_n(stats))
+            out_arr .= multipliers_U(stats)
             return Cint(0)
         end
     end
 
     push!(function_sigs, "int $(solname)_get_success($(stats_expr)* stats_ptr, bool* out)")
     _success = quote
-        Base.@ccallable function $(Symbol(solname, :_get_success))(stats_ptr::Ptr{$(stats_expr)}, out::Ptr{Cbool})::Cint
+        Base.@ccallable function $(Symbol(solname, :_get_success))(stats_ptr::Ptr{$(stats_expr)}, out::Ptr{Cuchar})::Cint
             stats = unsafe_pointer_to_objref(stats_ptr)
-            unsafe_store(out, success(stats))
+            unsafe_store!(out, success(stats))
             return Cint(0)
         end
     end
@@ -88,12 +93,13 @@ function generate_stats_getters(solname, stats_expr)
         $(_constraints)
         $(_multipliers)
         $(_multipliers_L)
+        $(_multipliers_U)
         $(_success)
     end
 end
 
 function generate_delete_stats(solname, stats_expr)
-    push!(function_sigs, "int $(solname)_delete_solver($(stats_expr)* stats_ptr)")
+    push!(function_sigs, "int $(solname)_delete_stats($(stats_expr)* stats_ptr)")
     return quote
         Base.@ccallable function $(Symbol(solname, :_delete_stats))(stats_ptr::Ptr{$(stats_expr)})::Cint
             if haskey(libmad_refs, stats_ptr)

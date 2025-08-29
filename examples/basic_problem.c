@@ -67,6 +67,9 @@ int main(int argc, char** argv)
   MadNLPSolver* solver1_ptr;
   MadNLPSolver* solver2_ptr;
   MadNLPSolver* solver3_ptr;
+	MadNLPExecutionStats* stats1_ptr;
+	MadNLPExecutionStats* stats2_ptr;
+	MadNLPExecutionStats* stats3_ptr;
 
   double* x0 = malloc(2*sizeof(double));
   x0[0] = 0; x0[1] = 0;
@@ -101,11 +104,29 @@ int main(int argc, char** argv)
   madnlp_create_solver(&solver1_ptr, nlp_ptr, opts1_ptr);
   madnlp_create_solver(&solver2_ptr, nlp_ptr, opts2_ptr);
   madnlp_create_solver(&solver3_ptr, nlp_ptr, opts3_ptr);
-  madnlp_solve(solver1_ptr, opts1_ptr);
-  madnlp_solve(solver2_ptr, opts2_ptr);
-  madnlp_solve(solver3_ptr, opts3_ptr);
+  madnlp_solve(solver1_ptr, opts1_ptr, &stats1_ptr);
+  madnlp_solve(solver2_ptr, opts2_ptr, &stats2_ptr);
+  madnlp_solve(solver3_ptr, opts3_ptr, &stats3_ptr);
+
+	bool success;
+	double* solution = malloc(2*sizeof(double));
+	double objective;
+
+	madnlp_get_success(stats1_ptr, &success);
+	madnlp_get_solution(stats1_ptr, solution);
+	madnlp_get_obj(stats1_ptr, &objective);
+
+	printf("Success: %s\n", success ? "true" : "false");
+	printf("Objective: %f\n", objective);
+	printf("Solution: [%f, ", solution[0]);
+	printf("%f]\n", solution[1]);
+
 	madnlp_delete_solver(solver1_ptr);
 	madnlp_delete_solver(solver2_ptr);
 	madnlp_delete_solver(solver3_ptr);
+
+	madnlp_delete_stats(stats1_ptr);
+	madnlp_delete_stats(stats2_ptr);
+	madnlp_delete_stats(stats3_ptr);
   return 0;
 }

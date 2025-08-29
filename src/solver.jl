@@ -37,8 +37,8 @@ function generate_delete_solver(solname, solver_expr, optsdict_expr)
 end
 
 
-function generate_solve(solname, solver_expr, optsdict_expr)
-    push!(function_sigs, "int $(solname)_solve($(solver_expr)* solver_ptr, $(optsdict_expr)* opts_ptr, $(stats_expr)** stats_ptr_ptr")
+function generate_solve(solname, solver_expr, optsdict_expr, stats_expr)
+    push!(function_sigs, "int $(solname)_solve($(solver_expr)* solver_ptr, $(optsdict_expr)* opts_ptr, $(stats_expr)** stats_ptr_ptr)")
     return quote
         Base.@ccallable function $(Symbol(solname, :_solve))(solver_ptr::Ptr{$(solver_expr)},
                                                              opts_ptr::Ptr{$(optsdict_expr)},

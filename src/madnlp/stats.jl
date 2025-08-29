@@ -30,6 +30,7 @@ function get_m(stats::MadNLPExecutionStats)
     return length(stats.constraints)
 end
 
-function success(stats::MadNLPExecutionStats{T, VT})
-    return 1 <= stats.status <= 3 # TODO 3 is not technically a success but might be
+function success(stats::MadNLPExecutionStats{T, VT}) where {T,VT}
+    return MadNLP.SOLVE_SUCCEEDED <= stats.status <= MadNLP.SOLVED_TO_ACCEPTABLE_LEVEL
+    # TODO SEARCH_DIRECTION_BECOMES_TOO_SMALL is not technically a success but might be
 end
