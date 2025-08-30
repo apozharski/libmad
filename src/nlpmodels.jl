@@ -150,3 +150,13 @@ function NLPModels.hess_coord!(nlp::CNLPModel, x::AbstractVector, y::AbstractVec
     end
     return H
 end
+
+push!(function_sigs, "int nlpmodel_delete_model(CNLPModel* model_ptr)")
+Base.@ccallable function nlpmodel_delete_model(model_ptr::Ptr{CNLPModel{Cdouble}})::Cint
+    if haskey(libmad_refs, model_ptr)
+        delete!(libmad_refs, model_ptr)
+        return Cint(0)
+    else
+        return Cint(1)
+    end
+end

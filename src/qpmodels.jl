@@ -42,3 +42,13 @@ Base.@ccallable function qpmodel_cpu_create(qp_ptr_ptr::Ptr{Ptr{QuadraticModel{C
 
     return Cint(0)
 end
+
+push!(function_sigs, "int qpmodel_delete_model(QuadraticModel* model_ptr)")
+Base.@ccallable function qpmodel_delete_model(model_ptr::Ptr{QuadraticModel{Cdouble}})::Cint
+    if haskey(libmad_refs, model_ptr)
+        delete!(libmad_refs, model_ptr)
+        return Cint(0)
+    else
+        return Cint(1)
+    end
+end
