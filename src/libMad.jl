@@ -1,7 +1,7 @@
 module libMad
 using InteractiveUtils
 using MadNLP
-using NLPModels
+using NLPModels, QuadraticModels
 using PrecompileTools: @setup_workload, @compile_workload, verbose
 using Base: unsafe_convert
 using SolverCore
@@ -15,6 +15,7 @@ dummy_structs::Vector{String} = []
 
 include("options.jl")
 include("nlpmodels.jl")
+include("qpmodels.jl")
 include("solver.jl")
 include("stats.jl")
 # MadNLP Solver interface definition
