@@ -6,7 +6,7 @@ push!(function_sigs, """int qpmodel_cpu_create(QuadraticModel** qp_ptr_ptr,
                                                double* lvar, double* uvar,
                                                double* lcon, double* ucon,
                                                long* I_H, long* J_H, double* H,
-                                               long* I_A, long* J_A, double* A,
+                                               long* I_A, long* J_A, double* A
                                                )"""
       )
 push!(dummy_structs, "QuadraticModel")
@@ -30,10 +30,10 @@ Base.@ccallable function qpmodel_cpu_create(qp_ptr_ptr::Ptr{Ptr{QuadraticModel{C
         Arows=unsafe_wrap(Vector{Clong}, Arows, nnza),
         Acols=unsafe_wrap(Vector{Clong}, Acols, nnza),
         Avals=unsafe_wrap(Vector{Cdouble}, Avals, nnza),
-        lvar=unsafe_wrap(Vector{Cdouble), lvar, nvar),
-        uvar=unsafe_wrap(Vector{Cdouble), uvar, nvar),
-        lcon=unsafe_wrap(Vector{Cdouble), lcon, ncon),
-        ucon=unsafe_wrap(Vector{Cdouble), ucon, ncon),
+        lvar=unsafe_wrap(Vector{Cdouble}, lvar, nvar),
+        uvar=unsafe_wrap(Vector{Cdouble}, uvar, nvar),
+        lcon=unsafe_wrap(Vector{Cdouble}, lcon, ncon),
+        ucon=unsafe_wrap(Vector{Cdouble}, ucon, ncon),
         name = unsafe_string(name)
     )
     qp_ptr = pointer_from_objref(nlp)

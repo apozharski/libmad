@@ -82,6 +82,7 @@ add_custom_command(
   ${PROJECT_SOURCE_DIR}/src/solver.jl
   ${PROJECT_SOURCE_DIR}/src/madnlp.jl
   ${PROJECT_SOURCE_DIR}/src/nlpmodels.jl
+  ${PROJECT_SOURCE_DIR}/src/qpmodels.jl
 )
 
 add_custom_command(
@@ -89,8 +90,10 @@ add_custom_command(
   COMMAND ${JULIA_EXECUTABLE} --project=${PROJECT_SOURCE_DIR} --startup-file=no ${PROJECT_SOURCE_DIR}/scripts/generate_headers.jl ${PROJECT_BINARY_DIR}
   DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
   ${PROJECT_SOURCE_DIR}/src/options.jl
+  ${PROJECT_SOURCE_DIR}/src/solver.jl
   ${PROJECT_SOURCE_DIR}/src/madnlp.jl
   ${PROJECT_SOURCE_DIR}/src/nlpmodels.jl
+  ${PROJECT_SOURCE_DIR}/src/qpmodels.jl
 )
 
 add_custom_target(

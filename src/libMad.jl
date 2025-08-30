@@ -1,6 +1,6 @@
 module libMad
 using InteractiveUtils
-using MadNLP
+using MadNLP, MadIPM
 using NLPModels, QuadraticModels
 using PrecompileTools: @setup_workload, @compile_workload, verbose
 using Base: unsafe_convert
@@ -13,11 +13,13 @@ libmad_refs::Dict = Dict()
 function_sigs::Vector{String} = []
 dummy_structs::Vector{String} = []
 
+# Core macros and models
 include("options.jl")
 include("nlpmodels.jl")
 include("qpmodels.jl")
 include("solver.jl")
 include("stats.jl")
+
 # MadNLP Solver interface definition
 # First define the possible types that any given `::Type` option can take.
 # This is important as it allows `--trim` to be smart about what types to keep
@@ -58,5 +60,17 @@ include("madnlp/stats.jl")
 
 # Precompile workload for madnlp
 include("madnlp/workload_precomp.jl")
+
+# MadIPM interface
+const madipm_type_dict = Dict(
+    (:kkt_system,) => KKT_DICT,
+    (:linear_solver,) => LS_DICT,
+    (:fixed_variable_treatment,) => FVT_DICT,
+    (:equality_treatment,) => ET_DICT,
+)
+
+@opts_dict(IPMOptions, MadIPMOptsDict, madipm_type_dict)
+
+@solver(madipm, MPCSolver, MadIPMOptsDict, MadNLPExecutionStats)
 
 end # module libMad
