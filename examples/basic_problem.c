@@ -61,9 +61,9 @@ int hess_coord(double obj_weight, double* x, double* y, double* H, void* user_da
 int main(int argc, char** argv)
 {
   CNLPModel* nlp_ptr;
-  MadNLPOptsDict* opts1_ptr;
-  MadNLPOptsDict* opts2_ptr;
-  MadNLPOptsDict* opts3_ptr;
+  OptsDict* opts1_ptr;
+  OptsDict* opts2_ptr;
+  OptsDict* opts3_ptr;
   MadNLPSolver* solver1_ptr;
   MadNLPSolver* solver2_ptr;
   MadNLPSolver* solver3_ptr;
@@ -94,13 +94,13 @@ int main(int argc, char** argv)
 		      &hess_coord,
 		      NULL);
 
-  madnlpoptions_create_options_struct(&opts1_ptr);
-  madnlpoptions_create_options_struct(&opts2_ptr);
-  madnlpoptions_create_options_struct(&opts3_ptr);
-	madnlpoptions_set_float64_option(opts1_ptr, "tol", 1e-8);
-	madnlpoptions_set_string_option(opts1_ptr, "linear_solver", "LapackCPUSolver");
-	madnlpoptions_set_string_option(opts2_ptr, "linear_solver", "LDLSolver");
-	madnlpoptions_set_string_option(opts3_ptr, "linear_solver", "UmfpackSolver");
+  libmad_create_options_dict(&opts1_ptr);
+  libmad_create_options_dict(&opts2_ptr);
+  libmad_create_options_dict(&opts3_ptr);
+	libmad_set_float64_option(opts1_ptr, "tol", 1e-8);
+	libmad_set_string_option(opts1_ptr, "linear_solver", "LapackCPUSolver");
+	libmad_set_string_option(opts2_ptr, "linear_solver", "LDLSolver");
+	libmad_set_string_option(opts3_ptr, "linear_solver", "UmfpackSolver");
   madnlp_create_solver(&solver1_ptr, nlp_ptr, opts1_ptr);
   madnlp_create_solver(&solver2_ptr, nlp_ptr, opts2_ptr);
   madnlp_create_solver(&solver3_ptr, nlp_ptr, opts3_ptr);

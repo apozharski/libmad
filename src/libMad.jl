@@ -34,18 +34,19 @@ include("stats.jl")
 # Provide a dictionary from "paths" (tuples of symbols) to their corresponding concrete_dict
 # For now we don't have a good way to "automagically" build this
 const madnlp_type_dict = Dict(
-    (:callback,) => CB_DICT,
-    (:kkt_system,) => KKT_DICT,
-    (:linear_solver,) => LS_DICT,
-    (:iterator,) => IT_DICT,
-    (:fixed_variable_treatment,) => FVT_DICT,
-    (:equality_treatment,) => ET_DICT,
-    (:hessian_approximation,) => HESS_DICT,
-    (:inertia_correction_method,) => IC_DICT,
-    (:dual_initialization_method,) => DIO_DICT,
+    "callback" => CB_DICT,
+    "kkt_system" => KKT_DICT,
+    "linear_solver" => LS_DICT,
+    "iterator" => IT_DICT,
+    "fixed_variable_treatment" => FVT_DICT,
+    "equality_treatment" => ET_DICT,
+    "hessian_approximation" => HESS_DICT,
+    "inertia_correction_method" => IC_DICT,
+    "dual_initialization_method" => DIO_DICT,
 )
 
-@opts_dict(MadNLPOptions{Cdouble}, MadNLPOptsDict, madnlp_type_dict)
+@opts(madnlp, MadNLPOptions{Cdouble}, libMad.madnlp_type_dict)
+#@opts_dict(MadNLPOptions{Cdouble}, MadNLPOptsDict, madnlp_type_dict)
 
 # Create stats
 @stats(madnlp, MadNLPExecutionStats)
@@ -56,6 +57,6 @@ const madnlp_type_dict = Dict(
 include("madnlp/stats.jl")
 
 # Precompile workload for madnlp
-include("madnlp/workload_precomp.jl")
+#include("madnlp/workload_precomp.jl")
 
 end # module libMad

@@ -5,7 +5,7 @@ abstract type AbstractOption end
 const ABSTRACT_OPTS = Union{MadNLP.AbstractBarrierUpdate}
 
 const ConcreteOption = Union{AbstractFloat, Integer, Type, String, Symbol, Enum}
-const Path = Tuple{Vararg{Symbol}}
+const Path = String
 const Guard = Tuple{Path, Type}
 const Guards = Vector{Guard}
 const Guardss = Vector{Guards}
@@ -15,11 +15,8 @@ const PathWithGuards = Tuple{Path, Guards}
 function get_populated_subpaths!(dict::Dict{Path}, path::Path)
     paths = Dict()
     for key in keys(dict)
-        if length(key) <= length(path)
-            continue
-        end
-        if key[1:length(path)] == path
-            push!(paths, key[length(path)+1:end] => dict[key])
+        if startswith(key,path)
+            push!(paths, chopprefix(key, path) => dict[key])
             delete!(dict, key)
         end
     end
@@ -300,7 +297,7 @@ function get_path_info(optstype::Type)
     path_guards = Dict{Path, Guardss}()
     path_type_options = Dict{Path, Dict{String,Type}}()
 
-    worklist::Vector{Tuple{PathWithGuards, Type}} = [(((fname,), []),ftype) for (fname, ftype) in  zip(fnames,ftypes)]
+    worklist::Vector{Tuple{PathWithGuards, Type}} = [((String(fname), []),ftype) for (fname, ftype) in  zip(fnames,ftypes)]
 
     while !isempty(worklist)
         ((path, guards), type) = popfirst!(worklist)
@@ -313,38 +310,27 @@ function get_path_info(optstype::Type)
         elseif isconcretetype(type)
             fnames_ = fieldnames(type)
             ftypes_ = fieldtypes(type)
-            append!(worklist, [(((path...,fname,), guards),ftype) for (fname, ftype) in zip(fnames_,ftypes_)])
+            append!(worklist, [((join((path, String(fname)), "."), guards),ftype) for (fname, ftype) in zip(fnames_,ftypes_)])
         else
             uts, cts = get_concrete_types(type)
-            push!(valid_paths, (path..., :TYPE) => Type)
+            type_path = join((path, "TYPE"), ".")
+            push!(valid_paths, type_path => Type)
             push!(path_type_options, path => Dict([(String(nameof(ut)),ut) for ut in uts]))
-            if !haskey(path_guards, (path..., :TYPE))
-                push!(path_guards, (path..., :TYPE) => [])
+            if !haskey(path_guards, type_path)
+                push!(path_guards, type_path => [])
             end
-            push!(path_guards[(path..., :TYPE)], guards)
+            push!(path_guards[type_path], guards)
             for (ut, ct) in zip(uts,cts)
                 fnames_ = fieldnames(ct)
                 ftypes_ = fieldtypes(ct)
                 new_guards = vcat(guards, (path, ut))
 
-                append!(worklist, [(((path...,fname,), new_guards), ftype) for (fname, ftype) in zip(fnames_,ftypes_)])
+                append!(worklist, [((join((path, String(fname)), "."), new_guards), ftype) for (fname, ftype) in zip(fnames_,ftypes_)])
             end
         end
     end
 
     return valid_paths, path_guards, path_type_options
-end
-
-function generate_guard(guard)
-    if isempty(guard)
-        return :(true)
-    elseif length(guard) == 1
-        (path, type) = guard[1]
-        return :(opts.dict[($(path)...,:TYPE)] == $(normalize_typename(type)))
-    else
-        (path, type) = guard[1]
-        return :(opts.dict[($(path)...,:TYPE)] == $(normalize_typename(type)) && $(generate_guard(guard[2:end])))
-    end
 end
 
 function generate_guards(guards, errcode)
@@ -477,44 +463,6 @@ function generate_string_to_type_checks(typedict_expr)
     end
 end
 
-function generate_to_parameters(opts_type, optsdict_expr, typedict_expr, path_type_options)
-    opts_name = Symbol(lowercase(String(opts_type.name.name)))
-    # TODO(@anton) I think the path compression could be done at compile time instead of searching at runtime,
-    #              however I think this is unimportant for now.
-    # TODO(@anton) This breaks if you have nested abstract options types. But fixing this is a huge pain.
-    #              We need to think about restricting the interface.
-    # TODO(@anton) This currently defers errors to the solver call if the types passed are wrong.
-    to_params = quote
-        function _to_parameters(opts::$(optsdict_expr))
-            # Takes a dict and walks it to create a flat dict with the proper types
-            path_type_options = $(path_type_options)
-            params = Dict(opts.dict)
-            # Process sub-options structs
-            for (path, typedict) in path_type_options
-                subpaths = get_populated_subpaths!(params, path)
-                if !haskey(subpaths, (:TYPE,))
-                    # TODO(@anton) warn?
-                    #@warn "Missing TYPE for $(path)"
-                    continue
-                end
-                type = subpaths[(:TYPE,)]
-                delete!(subpaths, (:TYPE,))
-                $(generate_string_to_type_suboptions_checks(path_type_options))
-            end
-            # Process `::Type` options
-            for (path, val) in params
-                $(generate_string_to_type_checks(typedict_expr))
-            end
-            params_out = Dict()
-            for (path, val) in params
-                # TODO(@anton) check that path is length one
-                params_out[path[1]] = val
-            end
-            return params_out
-        end
-    end
-end
-
 # Generate opts dict and opts dict interface for
 macro opts_dict(optstype_expr, optsdict_expr, typedict_expr)
     # get type
@@ -549,6 +497,145 @@ macro opts_dict(optstype_expr, optsdict_expr, typedict_expr)
             $(generate_setter(opts_type, optsdict_expr, Bool, valid_paths, path_guards, path_type_options))
             $(generate_string_setter(opts_type, optsdict_expr, valid_paths, path_guards, path_type_options))
             $(generate_to_parameters(opts_type, optsdict_expr, typedict_expr, path_type_options))
+        end
+    )
+end
+
+# New interface, using strings and deferring errors to solver creation
+# TODO(@anton) verify lhs is a valid dotstring
+const OptsDict = Dict{String, ConcreteOption}
+push!(dummy_structs, "OptsDict")
+
+push!(function_sigs, "int libmad_create_options_dict(OptsDict** opts_ptr)")
+Base.@ccallable function libmad_create_options_dict(opts_ptr_ptr::Ptr{Ptr{OptsDict}})::Cint
+    opts = OptsDict()
+    opts_ptr = Ptr{OptsDict}(pointer_from_objref(opts))
+    libmad_refs[opts_ptr] = opts
+    unsafe_store!(opts_ptr_ptr, opts_ptr)
+
+    return Cint(0)
+end
+
+for type in [Int32, Int64, Float32, Float64, Bool]
+    push!(function_sigs, "int libmad_set_$(to_c_name(type))_option(OptsDict* opts_ptr, char* name, $(to_c_name(type)) val)")
+    fname = "libmad_set_$(to_c_name(type))_option"
+    @eval begin
+        Base.@ccallable function $(Symbol(fname))(opts_ptr::Ptr{OptsDict}, name::Cstring, val::$(Symbol(type)))::Cint
+            opts = unsafe_pointer_to_objref(opts_ptr)
+            push!(opts, String(unsafe_string(name))=>val)
+            return Cint(0)
+        end
+    end
+end
+
+push!(function_sigs, "int libmad_set_string_option(OptsDict* opts_ptr, char* name, char* val)")
+Base.@ccallable function libmad_set_string_option(opts_ptr::Ptr{OptsDict}, name::Cstring, val::Cstring)::Cint
+    opts = unsafe_pointer_to_objref(opts_ptr)
+    push!(opts, String(unsafe_string(name))=>String(unsafe_string(name)))
+    return Cint(0)
+end
+
+function generate_guard(guard)
+    if isempty(guard)
+        return :(true)
+    elseif length(guard) == 1
+        (path, type) = guard[1]
+        return :((haskey(params, path) && params[$(join((path,"TYPE"), "."))] == $(normalize_typename(type))))
+    else
+        (path, type) = guard[1]
+        return :((haskey(params, path) && params[$(join((path,"TYPE"), "."))] == $(normalize_typename(type))) && $(generate_guard(guard[2:end])))
+    end
+end
+
+function generate_guards_check(guards)
+    if isempty(guards)
+        return :()
+    elseif length(guards) == 1
+        return :(($(generate_guard(guards[1]))) || delete!(params, path))
+    else
+        return :(($(generate_guard(guards[1]))) || ($(generate_guards_check(guards[2:end]))))
+    end
+end
+
+function generate_type_check(type)
+    return :(isa(params[path],$(normalize_type(type))) || delete!(params, path))
+end
+
+function generate_drop_check(path, type, guards)
+    return quote
+        if path == $(path)
+            $(generate_guards_check(guards))
+            $(generate_type_check(type))
+        end
+    end
+end
+
+function generate_drop_checks(valid_paths, path_guards)
+    checks = []
+    for (path, type) in valid_paths
+        push!(checks, generate_drop_check(path, type, path_guards[path]))
+    end
+    return checks
+end
+
+function generate_drop_invalid_options(valid_paths, path_guards)
+    type_checks = quote
+        for (path, val) in keys(params)
+            $(generate_drop_checks(valid_paths, path_guards)...)
+        end
+    end
+end
+
+function generate_to_parameters(prefix, typedict_expr, valid_paths, path_guards,  path_type_options)
+    # TODO(@anton) I think the path compression could be done at compile time instead of searching at runtime,
+    #              however I think this is unimportant for now.
+    # TODO(@anton) This breaks if you have nested abstract options types. But fixing this is a huge pain.
+    #              We need to think about restricting the interface.
+    # TODO(@anton) This currently defers errors to the solver call if the types passed are wrong.
+    to_params = quote
+        function $(Symbol(prefix, :_to_parameters))(opts::OptsDict)
+            # Takes a dict and walks it to create a flat dict with the proper types
+            params = Dict{String,Any}(opts)
+
+            $(generate_drop_invalid_options(valid_paths, path_guards))
+            # Process sub-options structs
+            for (path, typedict) in path_type_options
+                subpaths = get_populated_subpaths!(params, path)
+                if !haskey(subpaths, "TYPE")
+                    # TODO(@anton) warn?
+                    #@warn "Missing TYPE for $(path)"
+                    continue
+                end
+                type = subpaths["TYPE"]
+                delete!(subpaths, "TYPE")
+                $(generate_string_to_type_suboptions_checks(path_type_options))
+            end
+            # Process `::Type` options
+            for (path, val) in params
+                $(generate_string_to_type_checks(typedict_expr))
+            end
+            params_out = Dict()
+            for (path, val) in params
+                # TODO(@anton) check that path is length one
+                params_out[Symbol(path)] = val
+            end
+            return params
+        end
+    end
+
+    return to_params
+end
+
+macro opts(prefix, optstype_expr, typedict_expr)
+    opts_type = eval(optstype_expr)
+
+    valid_paths, path_guards, path_type_options = get_path_info(opts_type)
+
+    norm_leaf_types = Set(normalize_type.(values(valid_paths)))
+
+    return esc(
+        quote
+            $(generate_to_parameters(prefix, typedict_expr, valid_paths, path_guards, path_type_options))
         end
     )
 end
