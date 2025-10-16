@@ -12,11 +12,16 @@ const Guardss = Vector{Guards}
 const OptionWithGuards = Tuple{ConcreteOption, Guards}
 const PathWithGuards = Tuple{Path, Guards}
 
-function get_populated_subpaths!(dict::Dict{Path}, path::Path)
-    paths = Dict()
-    for key in keys(dict)
-        if startswith(key,path)
-            push!(paths, chopprefix(key, path) => dict[key])
+# New interface, using strings and deferring errors to solver creation
+# TODO(@anton) verify lhs is a valid dotstring
+const OptsDict = Dict{String, ConcreteOption}
+push!(dummy_structs, "OptsDict")
+
+function get_populated_subpaths!(dict::OptsDict, path::Path)
+    paths::OptsDict = OptsDict()::OptsDict
+    for (key,val) in dict
+        if startswith(key, path)
+            push!(paths, (String(chopprefix(key, path)), val))
             delete!(dict, key)
         end
     end
@@ -315,7 +320,7 @@ function get_path_info(optstype::Type)
             uts, cts = get_concrete_types(type)
             type_path = join((path, "TYPE"), ".")
             push!(valid_paths, type_path => Type)
-            push!(path_type_options, path => Dict([(String(nameof(ut)),ut) for ut in uts]))
+            push!(path_type_options, path => Dict([(String(nameof(ut)),ct) for (ut,ct) in zip(uts,cts)]))
             if !haskey(path_guards, type_path)
                 push!(path_guards, type_path => [])
             end
@@ -337,9 +342,9 @@ function generate_guards(guards, errcode)
     if isempty(guards)
         return :()
     elseif length(guards) == 1
-        return :(($(generate_guard(guards[1]))) || return Cint($(errcode)))
+        return :(($(generate_guard(guards[1]::Guard))) || return Cint($(errcode)))
     else
-        return :(($(generate_guard(guards[1]))) || ($(generate_guards(guards[2:end], errcode))))
+        return :(($(generate_guard(guards[1]::Guard))) || ($(generate_guards(guards[2:end], errcode))))
     end
 end
 
@@ -428,13 +433,21 @@ function generate_string_setter(opts_type, dict_type, valid_paths, path_guards, 
     return setter
 end
 
+# WARNING(@anton): This code contains a hack to get around not being able to splat (when using --trim)
+#                  a dictionary into the arguments via `subpaths...`. This is due to a fundamental
+#                  limitation in Julia v1.12, see: https://github.com/JuliaLang/julia/issues/57830
 function generate_string_to_type_suboptions_checks(path_type_options)
     checks = []
     for (path, typedict) in path_type_options
         for (tstring, type) in typedict
             check = quote
                 if path == $(path) && type == $(tstring)
-                    push!(params, path => $(type)(subpaths...))
+                    subpath_args = NamedTuple()
+                    for (sk, sv) in subpaths
+                        subpath_args = merge(subpath_args, ((Symbol(sk),sv),))
+                    end
+                    $(Symbol(tstring,:_suboptions)) = $(type)(;subpath_args)
+                    push!(params, (path, $(Symbol(tstring,:_suboptions))))
                 end
             end
             push!(checks, check)
@@ -463,49 +476,6 @@ function generate_string_to_type_checks(typedict_expr)
     end
 end
 
-# Generate opts dict and opts dict interface for
-macro opts_dict(optstype_expr, optsdict_expr, typedict_expr)
-    # get type
-    # TODO(@anton check if is subtype of AbstractOptions
-    opts_type = eval(optstype_expr)
-
-    valid_paths, path_guards, path_type_options = get_path_info(opts_type)
-
-    norm_leaf_types = Set(normalize_type.(values(valid_paths)))
-
-    opts_name = Symbol(lowercase(String(opts_type.name.name)))
-
-    push!(function_sigs, "int $(opts_name)_create_options_struct($(optsdict_expr)** opts_ptr)")
-    push!(dummy_structs, "$(optsdict_expr)")
-    return esc(
-        quote
-            mutable struct $(optsdict_expr)
-                dict::Dict{Path, ConcreteOption}
-            end
-
-            Base.@ccallable function $(Symbol(opts_name,:_create_options_struct))(opts_ptr::Ptr{Ptr{$(optsdict_expr)}})::Cint
-                dict = $(optsdict_expr)(Dict())
-                dict_ptr = Ptr{$(optsdict_expr)}(pointer_from_objref(dict))
-                libmad_refs[dict_ptr] = dict
-                unsafe_store!(opts_ptr, dict_ptr)
-
-                return Cint(0)
-            end
-            
-            $(generate_setter(opts_type, optsdict_expr, Int64, valid_paths, path_guards, path_type_options))
-            $(generate_setter(opts_type, optsdict_expr, Float64, valid_paths, path_guards, path_type_options))
-            $(generate_setter(opts_type, optsdict_expr, Bool, valid_paths, path_guards, path_type_options))
-            $(generate_string_setter(opts_type, optsdict_expr, valid_paths, path_guards, path_type_options))
-            $(generate_to_parameters(opts_type, optsdict_expr, typedict_expr, path_type_options))
-        end
-    )
-end
-
-# New interface, using strings and deferring errors to solver creation
-# TODO(@anton) verify lhs is a valid dotstring
-const OptsDict = Dict{String, ConcreteOption}
-push!(dummy_structs, "OptsDict")
-
 push!(function_sigs, "int libmad_create_options_dict(OptsDict** opts_ptr)")
 Base.@ccallable function libmad_create_options_dict(opts_ptr_ptr::Ptr{Ptr{OptsDict}})::Cint
     opts = OptsDict()
@@ -521,7 +491,7 @@ for type in [Int32, Int64, Float32, Float64, Bool]
     fname = "libmad_set_$(to_c_name(type))_option"
     @eval begin
         Base.@ccallable function $(Symbol(fname))(opts_ptr::Ptr{OptsDict}, name::Cstring, val::$(Symbol(type)))::Cint
-            opts = unsafe_pointer_to_objref(opts_ptr)
+            opts::OptsDict = unsafe_pointer_to_objref(opts_ptr)::OptsDict
             push!(opts, String(unsafe_string(name))=>val)
             return Cint(0)
         end
@@ -530,8 +500,8 @@ end
 
 push!(function_sigs, "int libmad_set_string_option(OptsDict* opts_ptr, char* name, char* val)")
 Base.@ccallable function libmad_set_string_option(opts_ptr::Ptr{OptsDict}, name::Cstring, val::Cstring)::Cint
-    opts = unsafe_pointer_to_objref(opts_ptr)
-    push!(opts, String(unsafe_string(name))=>String(unsafe_string(name)))
+    opts::OptsDict = unsafe_pointer_to_objref(opts_ptr)::OptsDict
+    push!(opts, String(unsafe_string(name))=>String(unsafe_string(val)))
     return Cint(0)
 end
 
@@ -580,7 +550,7 @@ end
 
 function generate_drop_invalid_options(valid_paths, path_guards)
     type_checks = quote
-        for (path, val) in keys(params)
+        for path in keys(params)
             $(generate_drop_checks(valid_paths, path_guards)...)
         end
     end
@@ -593,14 +563,15 @@ function generate_to_parameters(prefix, typedict_expr, valid_paths, path_guards,
     #              We need to think about restricting the interface.
     # TODO(@anton) This currently defers errors to the solver call if the types passed are wrong.
     to_params = quote
-        function $(Symbol(prefix, :_to_parameters))(opts::OptsDict)
+        function $(Symbol(prefix, :_to_parameters))(opts::OptsDict)::NamedTuple
             # Takes a dict and walks it to create a flat dict with the proper types
-            params = Dict{String,Any}(opts)
+            params::OptsDict = OptsDict(opts)::OptsDict
+            path_type_options = $(path_type_options)
 
             $(generate_drop_invalid_options(valid_paths, path_guards))
             # Process sub-options structs
             for (path, typedict) in path_type_options
-                subpaths = get_populated_subpaths!(params, path)
+                subpaths::OptsDict = get_populated_subpaths!(params, path)
                 if !haskey(subpaths, "TYPE")
                     # TODO(@anton) warn?
                     #@warn "Missing TYPE for $(path)"
@@ -614,12 +585,12 @@ function generate_to_parameters(prefix, typedict_expr, valid_paths, path_guards,
             for (path, val) in params
                 $(generate_string_to_type_checks(typedict_expr))
             end
-            params_out = Dict()
+            params_out = NamedTuple()
             for (path, val) in params
                 # TODO(@anton) check that path is length one
-                params_out[Symbol(path)] = val
+                params_out = merge(params_out, ((Symbol(path),val),))
             end
-            return params
+            return params_out
         end
     end
 

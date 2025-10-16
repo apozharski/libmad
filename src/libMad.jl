@@ -7,7 +7,7 @@ using Base: unsafe_convert
 using SolverCore
 
 # Store of references to libMad objects, to prevent garbage collection.
-libmad_refs::Dict = Dict()
+libmad_refs::Dict{Ptr, Any} = Dict{Ptr, Any}()
 
 # Store of signatures for header generation
 function_sigs::Vector{String} = []
@@ -49,10 +49,10 @@ const madnlp_type_dict = Dict(
 #@opts_dict(MadNLPOptions{Cdouble}, MadNLPOptsDict, madnlp_type_dict)
 
 # Create stats
-@stats(madnlp, MadNLPExecutionStats)
+@stats(madnlp, MadNLPExecutionStats{Cdouble, AbstractVector{Cdouble}})
 
 # Now create solver interface
-@solver(madnlp, MadNLPSolver, MadNLPOptsDict, MadNLPExecutionStats)
+@solver(madnlp, MadNLPSolver{Cdouble}, MadNLPOptsDict, MadNLPExecutionStats{Cdouble, AbstractVector{Cdouble}})
 
 include("madnlp/stats.jl")
 
