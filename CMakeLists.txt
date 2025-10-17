@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.17)
 project(libMad)
 
+option(JULIAC_FLAGS "Additional flags for juliac" "")
+
 message(CHECK_START "Check Juliaup Executable")
 set(JULIAUP_EXECUTABLE "juliaup" CACHE STRING "Juliaup executable default")
 if (JULIAUP_EXECUTABLE STREQUAL "julia")
@@ -73,11 +75,13 @@ if(NOT JULIAC_EXECUTABLE)
 else()
   message(CHECK_PASS "juliac.jl found")
 endif()
-
 add_custom_command(
-  OUTPUT ${PROJECT_BINARY_DIR}/libMad.so
-  COMMAND juliac --project ${PROJECT_SOURCE_DIR} --compile-ccallable --experimental --trim=no --output-lib ${PROJECT_BINARY_DIR}/libMad ${PROJECT_SOURCE_DIR}/src/recipe.jl
+  OUTPUT ${PROJECT_BINARY_DIR}/lib/libMad.so
+  ${PROJECT_BINARY_DIR}/lib
+  ${PROJECT_BINARY_DIR}/share
+  COMMAND juliac --project ${PROJECT_SOURCE_DIR} --compile-ccallable --bundle ${PROJECT_BINARY_DIR} --experimental ${JULIAC_FLAGS} --output-lib ${PROJECT_BINARY_DIR}/libMad ${PROJECT_SOURCE_DIR}/src/recipe.jl
   DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
+  ${PROJECT_SOURCE_DIR}/src/utils.jl
   ${PROJECT_SOURCE_DIR}/src/options.jl
   ${PROJECT_SOURCE_DIR}/src/solver.jl
   ${PROJECT_SOURCE_DIR}/src/stats.jl
@@ -89,6 +93,7 @@ add_custom_command(
   OUTPUT ${PROJECT_BINARY_DIR}/libMad.h
   COMMAND ${JULIA_EXECUTABLE} --project=${PROJECT_SOURCE_DIR} --startup-file=no ${PROJECT_SOURCE_DIR}/scripts/generate_headers.jl ${PROJECT_BINARY_DIR}
   DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
+  ${PROJECT_SOURCE_DIR}/src/utils.jl
   ${PROJECT_SOURCE_DIR}/src/options.jl
   ${PROJECT_SOURCE_DIR}/src/solver.jl
   ${PROJECT_SOURCE_DIR}/src/stats.jl
@@ -98,7 +103,7 @@ add_custom_command(
 
 add_custom_target(
   libMad_target ALL
-  DEPENDS ${PROJECT_BINARY_DIR}/libMad.so
+  DEPENDS ${PROJECT_BINARY_DIR}/lib/libMad.so
   ${PROJECT_BINARY_DIR}/libMad.h
 )
 
@@ -107,7 +112,7 @@ add_dependencies(libMad libMad_target)
 
 set_target_properties(libMad
   PROPERTIES
-  IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/libMad.so
+  IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/lib/libMad.so
 )
 
 target_include_directories(libMad INTERFACE ${PROJECT_BINARY_DIR} ${JULIA_INCLUDE_DIR})

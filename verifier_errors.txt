@@ -1,279 +1,243 @@
-Verifier error #1: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_m(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
+Verifier error #1: unresolved call from statement libMad.get_n(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
 Stacktrace:
- [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:45
-
-Verifier error #2: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
-Stacktrace:
- [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:46
-
-Verifier error #3: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:46
-
-Verifier error #4: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:46
-
-Verifier error #5: unresolved call from statement libMad.length(Base.getfield(stats::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Any
-Stacktrace:
- [1] get_m(stats::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})
-   @ libMad ~/syscop/software/libmad/src/madnlp/stats.jl:30
- [2] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:45
-
-Verifier error #6: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_m(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
-Stacktrace:
- [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:55
-
-Verifier error #7: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
-Stacktrace:
- [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:56
-
-Verifier error #8: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:56
-
-Verifier error #9: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:56
-
-Verifier error #10: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_n(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
-Stacktrace:
- [1] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:75
-
-Verifier error #11: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_U)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
-Stacktrace:
- [1] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
+◑ Compiling...madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
    @ libMad ~/syscop/software/libmad/src/stats.jl:76
 
-Verifier error #12: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_U)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
+Verifier error #2: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers_U)::Any)::Any
 Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:76
+ [1] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:77
 
-Verifier error #13: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_U)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_U)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
+Verifier error #3: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers_U)::Any)::Any)::Any
 Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:76
+ [1] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:77
 
-Verifier error #14: unresolved call from statement libMad.length(Base.getfield(stats::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Any
+Verifier error #4: unresolved call from statement Base.convert(IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}, ccall(:jl_value_ptr)::Any)::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}
 Stacktrace:
- [1] get_n(stats::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})
-   @ libMad ~/syscop/software/libmad/src/madnlp/stats.jl:26
- [2] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:75
+ [1] wrap_obj(ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/utils.jl:7
+ [2] libmad_set_long_option(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, name::Cstring, val::Int64)
+   @ libMad ~/syscop/software/libmad/src/options.jl:494
 
-Verifier error #15: unresolved call from statement Core.kwcall($(QuoteNode((nt_opts = NamedTuple(),))), libMad.solve!, ccall(:jl_value_ptr)::MadNLP.MadNLPSolver{Float64, VT, VI, KKTSystem, Model, CB, Iterator, IC, KKTVec} where {VT<:AbstractVector{Float64}, VI<:AbstractVector{Int64}, KKTSystem<:(MadNLP.AbstractKKTSystem{Float64, VT, MT, QN} where {VT, MT<:AbstractMatrix{Float64}, QN<:MadNLP.AbstractHessian{Float64, VT}}), Model<:NLPModels.AbstractNLPModel{Float64, VT}, CB<:(MadNLP.AbstractCallback{Float64}), Iterator<:MadNLP.AbstractIterator{Float64}, IC<:MadNLP.AbstractInertiaCorrector, KKTVec<:MadNLP.AbstractKKTVector{Float64, VT}})::MadNLP.MadNLPExecutionStats{Float64}
+Verifier error #5: unresolved call from statement libMad.solve!(libMad.wrap_obj(solver_ptr::Ptr{MadNLP.MadNLPSolver})::MadNLP.MadNLPSolver)::MadNLP.MadNLPExecutionStats
 Stacktrace:
- [1] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver{Float64, VT, VI, KKTSystem, Model, CB, Iterator, IC, KKTVec} where {VT<:AbstractVector{Float64}, VI<:AbstractVector{Int64}, KKTSystem<:(MadNLP.AbstractKKTSystem{Float64, VT, MT, QN} where {VT, MT<:AbstractMatrix{Float64}, QN<:MadNLP.AbstractHessian{Float64, VT}}), Model<:NLPModels.AbstractNLPModel{Float64, VT}, CB<:(MadNLP.AbstractCallback{Float64}), Iterator<:MadNLP.AbstractIterator{Float64}, IC<:MadNLP.AbstractInertiaCorrector, KKTVec<:MadNLP.AbstractKKTVector{Float64, VT}}}, opts_ptr::Ptr{Dict{String, Union{AbstractFloat, Integer, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}})
-   @ libMad ~/syscop/software/libmad/src/solver.jl:52
+ [1] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
 
-Verifier error #16: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_n(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
+Verifier error #6: unresolved call from statement Core.kwcall(Base.merge($(QuoteNode(NamedTuple())), libMad.madnlp_to_parameters(libMad.wrap_obj(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}})::IdDict{Any, Any})::NamedTuple, libMad.solve!, libMad.wrap_obj(solver_ptr::Ptr{MadNLP.MadNLPSolver})::MadNLP.MadNLPSolver)::MadNLP.MadNLPExecutionStats
 Stacktrace:
- [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:35
+ [1] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
 
-Verifier error #17: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
+Verifier error #7: unresolved call from statement Core._apply_iterate(Base.iterate, Core.tuple, %new()::Vector{Symbol})::Tuple{Vararg{Symbol}}
 Stacktrace:
- [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:36
+ [1] merge(a::@NamedTuple{}, itr::IdDict{Any, Any})
+   @ Base namedtuple.jl:379
+ [2] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
 
-Verifier error #18: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
+Verifier error #8: unresolved call from statement Core._apply_iterate(Base.iterate, Core.tuple, %new()::Vector{Any})::Tuple
 Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:36
+ [1] merge(a::@NamedTuple{}, itr::IdDict{Any, Any})
+   @ Base namedtuple.jl:379
+ [2] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
 
-Verifier error #19: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
+Verifier error #9: unresolved call from statement libMad.get_m(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
 Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:36
-
-Verifier error #20: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_n(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
-Stacktrace:
- [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:65
-
-Verifier error #21: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_L)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
-Stacktrace:
- [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:66
-
-Verifier error #22: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_L)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:66
-
-Verifier error #23: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_L)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_L)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:66
-
-Verifier error #24: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_n(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
-Stacktrace:
- [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:65
-
-Verifier error #25: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_L)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
-Stacktrace:
- [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:66
-
-Verifier error #26: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_L)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:66
-
-Verifier error #27: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_L)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_L)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:66
-
-Verifier error #28: unresolved call from statement libMad.length(Base.getfield(stats::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Any
-Stacktrace:
- [1] get_n(stats::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})
-   @ libMad ~/syscop/software/libmad/src/madnlp/stats.jl:26
- [2] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:75
-
-Verifier error #29: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_n(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
-Stacktrace:
- [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:35
-
-Verifier error #30: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
-Stacktrace:
- [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:36
-
-Verifier error #31: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:36
-
-Verifier error #32: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :solution)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:36
-
-Verifier error #33: unresolved call from statement Core.kwcall($(QuoteNode((nt_opts = NamedTuple(),))), libMad.solve!, ccall(:jl_value_ptr)::MadNLP.MadNLPSolver{Float64, VT, VI, KKTSystem, Model, CB, Iterator, IC, KKTVec} where {VT<:AbstractVector{Float64}, VI<:AbstractVector{Int64}, KKTSystem<:(MadNLP.AbstractKKTSystem{Float64, VT, MT, QN} where {VT, MT<:AbstractMatrix{Float64}, QN<:MadNLP.AbstractHessian{Float64, VT}}), Model<:NLPModels.AbstractNLPModel{Float64, VT}, CB<:(MadNLP.AbstractCallback{Float64}), Iterator<:MadNLP.AbstractIterator{Float64}, IC<:MadNLP.AbstractInertiaCorrector, KKTVec<:MadNLP.AbstractKKTVector{Float64, VT}})::MadNLP.MadNLPExecutionStats{Float64}
-Stacktrace:
- [1] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver{Float64, VT, VI, KKTSystem, Model, CB, Iterator, IC, KKTVec} where {VT<:AbstractVector{Float64}, VI<:AbstractVector{Int64}, KKTSystem<:(MadNLP.AbstractKKTSystem{Float64, VT, MT, QN} where {VT, MT<:AbstractMatrix{Float64}, QN<:MadNLP.AbstractHessian{Float64, VT}}), Model<:NLPModels.AbstractNLPModel{Float64, VT}, CB<:(MadNLP.AbstractCallback{Float64}), Iterator<:MadNLP.AbstractIterator{Float64}, IC<:MadNLP.AbstractInertiaCorrector, KKTVec<:MadNLP.AbstractKKTVector{Float64, VT}}}, opts_ptr::Ptr{Dict{String, Union{AbstractFloat, Integer, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}})
-   @ libMad ~/syscop/software/libmad/src/solver.jl:52
-
-Verifier error #34: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_n(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
-Stacktrace:
- [1] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:75
-
-Verifier error #35: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_U)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
-Stacktrace:
- [1] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:76
-
-Verifier error #36: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_U)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:76
-
-Verifier error #37: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_U)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers_U)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:76
-
-Verifier error #38: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_m(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
-Stacktrace:
- [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:55
-
-Verifier error #39: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
-Stacktrace:
- [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:56
-
-Verifier error #40: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:56
-
-Verifier error #41: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :multipliers)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
-Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:56
-
-Verifier error #42: unresolved call from statement libMad.length(Base.getfield(stats::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Any
-Stacktrace:
- [1] get_m(stats::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})
-   @ libMad ~/syscop/software/libmad/src/madnlp/stats.jl:30
- [2] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:45
-
-Verifier error #43: unresolved call from statement libMad.unsafe_wrap(Vector{Float64}, out::Ptr{Float64}, libMad.get_m(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}})::Any)::Vector{Float64}
-Stacktrace:
- [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:45
-
-Verifier error #44: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle}
-Stacktrace:
- [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
+ [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
    @ libMad ~/syscop/software/libmad/src/stats.jl:46
 
-Verifier error #45: unresolved call from statement Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
+Verifier error #10: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :constraints)::Any)::Any
 Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
+ [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:47
+
+Verifier error #11: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :constraints)::Any)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:47
+
+Verifier error #12: unresolved call from statement libMad.MadNLPSolver(libMad.wrap_obj(nlp_ptr::Ptr{libMad.CNLPModel{Float64}})::libMad.CNLPModel{Float64})::MadNLP.MadNLPSolver
+Stacktrace:
+ [1] madnlp_create_solver(solver_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPSolver}}, nlp_ptr::Ptr{libMad.CNLPModel{Float64}}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:14
+
+Verifier error #13: unresolved call from statement Core.kwcall(Base.merge($(QuoteNode(NamedTuple())), libMad.madnlp_to_parameters(libMad.wrap_obj(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}})::IdDict{Any, Any})::NamedTuple, libMad.MadNLPSolver, libMad.wrap_obj(nlp_ptr::Ptr{libMad.CNLPModel{Float64}})::libMad.CNLPModel{Float64})::MadNLP.MadNLPSolver
+Stacktrace:
+ [1] madnlp_create_solver(solver_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPSolver}}, nlp_ptr::Ptr{libMad.CNLPModel{Float64}}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:14
+
+Verifier error #14: unresolved call from statement libMad.get_n(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:66
+
+Verifier error #15: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers_L)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:67
+
+Verifier error #16: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers_L)::Any)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:67
+
+Verifier error #17: unresolved call from statement libMad.get_m(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:56
+
+Verifier error #18: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:57
+
+Verifier error #19: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers)::Any)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:57
+
+Verifier error #20: unresolved call from statement libMad.unsafe_store!(out::Ptr{Float64}, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :objective)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:26
+
+Verifier error #21: unresolved call from statement libMad.get_n(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
+Stacktrace:
+ [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:36
+
+Verifier error #22: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :solution)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:37
+
+Verifier error #23: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :solution)::Any)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:37
+
+Verifier error #24: unresolved call from statement libMad.get_n(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
+Stacktrace:
+ [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:36
+
+Verifier error #25: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :solution)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:37
+
+Verifier error #26: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :solution)::Any)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_solution(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:37
+
+Verifier error #27: unresolved call from statement libMad.unsafe_store!(out::Ptr{Float64}, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :objective)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:26
+
+Verifier error #28: unresolved call from statement libMad.get_m(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:56
+
+Verifier error #29: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:57
+
+Verifier error #30: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers)::Any)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:57
+
+Verifier error #31: unresolved call from statement Base.convert(IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}, ccall(:jl_value_ptr)::Any)::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}
+Stacktrace:
+ [1] wrap_obj(ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/utils.jl:7
+ [2] libmad_set_long_option(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, name::Cstring, val::Int64)
+   @ libMad ~/syscop/software/libmad/src/options.jl:494
+
+Verifier error #32: unresolved call from statement libMad.get_n(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:66
+
+Verifier error #33: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers_L)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:67
+
+Verifier error #34: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers_L)::Any)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers_L(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:67
+
+Verifier error #35: unresolved call from statement libMad.MadNLPSolver(libMad.wrap_obj(nlp_ptr::Ptr{libMad.CNLPModel{Float64}})::libMad.CNLPModel{Float64})::MadNLP.MadNLPSolver
+Stacktrace:
+ [1] madnlp_create_solver(solver_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPSolver}}, nlp_ptr::Ptr{libMad.CNLPModel{Float64}}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:14
+
+Verifier error #36: unresolved call from statement Core.kwcall(Base.merge($(QuoteNode(NamedTuple())), libMad.madnlp_to_parameters(libMad.wrap_obj(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}})::IdDict{Any, Any})::NamedTuple, libMad.MadNLPSolver, libMad.wrap_obj(nlp_ptr::Ptr{libMad.CNLPModel{Float64}})::libMad.CNLPModel{Float64})::MadNLP.MadNLPSolver
+Stacktrace:
+ [1] madnlp_create_solver(solver_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPSolver}}, nlp_ptr::Ptr{libMad.CNLPModel{Float64}}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:14
+
+Verifier error #37: unresolved call from statement Core._apply_iterate(Base.iterate, Core.tuple, %new()::Vector{Symbol})::Tuple{Vararg{Symbol}}
+Stacktrace:
+ [1] merge(a::@NamedTuple{}, itr::IdDict{Any, Any})
+   @ Base namedtuple.jl:379
+ [2] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #38: unresolved call from statement Core._apply_iterate(Base.iterate, Core.tuple, %new()::Vector{Any})::Tuple
+Stacktrace:
+ [1] merge(a::@NamedTuple{}, itr::IdDict{Any, Any})
+   @ Base namedtuple.jl:379
+ [2] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #39: unresolved call from statement libMad.get_m(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
+Stacktrace:
+ [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
    @ libMad ~/syscop/software/libmad/src/stats.jl:46
 
-Verifier error #46: unresolved call from statement Base.Broadcast.materialize!(Base.Broadcast.combine_styles(φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any, φ ()::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(φ ()::MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}, :constraints)::AbstractVector{Float64})::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})::Any
+Verifier error #40: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :constraints)::Any)::Any
 Stacktrace:
- [1] materialize!(dest::Vector{Float64}, bc::Base.Broadcast.Broadcasted{Style, Nothing, typeof(identity)} where Style<:Union{Nothing, Base.Broadcast.BroadcastStyle})
-   @ Base.Broadcast broadcast.jl:902 [inlined]
- [2] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats{Float64, AbstractVector{Float64}}}, out::Ptr{Float64})
-   @ libMad ~/syscop/software/libmad/src/stats.jl:46
+ [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:47
+
+Verifier error #41: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :constraints)::Any)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_constraints(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:47
+
+Verifier error #42: unresolved call from statement libMad.solve!(libMad.wrap_obj(solver_ptr::Ptr{MadNLP.MadNLPSolver})::MadNLP.MadNLPSolver)::MadNLP.MadNLPExecutionStats
+Stacktrace:
+ [1] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #43: unresolved call from statement Core.kwcall(Base.merge($(QuoteNode(NamedTuple())), libMad.madnlp_to_parameters(libMad.wrap_obj(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}})::IdDict{Any, Any})::NamedTuple, libMad.solve!, libMad.wrap_obj(solver_ptr::Ptr{MadNLP.MadNLPSolver})::MadNLP.MadNLPSolver)::MadNLP.MadNLPExecutionStats
+Stacktrace:
+ [1] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #44: unresolved call from statement libMad.get_n(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:76
+
+Verifier error #45: unresolved call from statement Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers_U)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:77
+
+Verifier error #46: unresolved call from statement Base.materialize!(ccall(:jl_ptr_to_array_1d)::Vector{Float64}, Base.broadcasted(Base.identity, Base.getfield(libMad.wrap_obj(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats})::MadNLP.MadNLPExecutionStats, :multipliers_U)::Any)::Any)::Any
+Stacktrace:
+ [1] madnlp_get_multipliers_U(stats_ptr::Ptr{MadNLP.MadNLPExecutionStats}, out::Ptr{Float64})
+   @ libMad ~/syscop/software/libmad/src/stats.jl:77
 
 Trim verify finished with 46 errors, 0 warnings.

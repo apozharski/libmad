@@ -1,5 +1,5 @@
 
-mutable struct CNLPModel{T, VT} <: AbstractNLPModel{T,VT}
+mutable struct CNLPModel{T, VT<:AbstractVector{T}} <: AbstractNLPModel{T,VT}
     meta::NLPModelMeta{T, VT}
     counters::NLPModels.Counters
     jac_struct::Ptr{Cvoid}
@@ -27,7 +27,7 @@ push!(function_sigs, """int nlpmodel_cpu_create(CNLPModel** nlp_ptr_ptr,
       )
 push!(dummy_structs, "CNLPModel")
 
-Base.@ccallable function nlpmodel_cpu_create(nlp_ptr_ptr::Ptr{Ptr{CNLPModel{Cdouble}}},
+Base.@ccallable function nlpmodel_cpu_create(nlp_ptr_ptr::Ptr{Ptr{Cvoid}},
                                              name::Cstring,
                                              nvar::Clong, ncon::Clong,
                                              nnzj::Clong, nnzh::Clong,
@@ -66,7 +66,7 @@ Base.@ccallable function nlpmodel_cpu_create(nlp_ptr_ptr::Ptr{Ptr{CNLPModel{Cdou
         eval_h,
         user_data
     )
-    nlp_ptr = Ptr{CNLPModel{Cdouble}}(pointer_from_objref(nlp))
+    nlp_ptr = Ptr{CNLPModel{Cdouble, Vector{Cdouble}}}(pointer_from_objref(nlp))
     unsafe_store!(nlp_ptr_ptr, nlp_ptr)
     libmad_refs[nlp_ptr] = nlp
 

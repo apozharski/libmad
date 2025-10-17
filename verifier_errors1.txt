@@ -1,0 +1,78 @@
+Verifier error #1: unresolved call from statement libMad.solve!(libMad.wrap_obj(solver_ptr::Ptr{MadNLP.MadNLPSolver})::MadNLP.MadNLPSolver)::MadNLP.MadNLPExecutionStats
+Stacktrace:
+ [1] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, Vector{Float64}}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #2: unresolved call from statement Core.kwcall(Base.merge($(QuoteNode(NamedTuple())), libMad.madnlp_to_parameters(libMad.wrap_obj(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}})::IdDict{Any, Any})::NamedTuple, libMad.solve!, libMad.wrap_obj(solver_ptr::Ptr{MadNLP.MadNLPSolver})::MadNLP.MadNLPSolver)::MadNLP.MadNLPExecutionStats
+Stacktrace:
+ [1] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, Vector{Float64}}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #3: unresolved call from statement Core._apply_iterate(Base.iterate, Core.tuple, %new()::Vector{Symbol})::Tuple{Vararg{Symbol}}
+Stacktrace:
+ [1] merge(a::@NamedTuple{}, itr::IdDict{Any, Any})
+   @ Base namedtuple.jl:379
+◒ Compiling...madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, Vector{Float64}}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #4: unresolved call from statement Core._apply_iterate(Base.iterate, Core.tuple, %new()::Vector{Any})::Tuple
+Stacktrace:
+ [1] merge(a::@NamedTuple{}, itr::IdDict{Any, Any})
+   @ Base namedtuple.jl:379
+ [2] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, Vector{Float64}}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #5: unresolved call from statement Base.convert(IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}, ccall(:jl_value_ptr)::Any)::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}
+Stacktrace:
+ [1] wrap_obj(ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/utils.jl:7
+ [2] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, Vector{Float64}}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:50
+
+Verifier error #6: unresolved call from statement libMad.MadNLPSolver(libMad.wrap_obj(nlp_ptr::Ptr{libMad.CNLPModel{Float64}})::libMad.CNLPModel{Float64})::MadNLP.MadNLPSolver
+Stacktrace:
+ [1] madnlp_create_solver(solver_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPSolver}}, nlp_ptr::Ptr{libMad.CNLPModel{Float64}}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:14
+
+Verifier error #7: unresolved call from statement Core.kwcall(Base.merge($(QuoteNode(NamedTuple())), libMad.madnlp_to_parameters(libMad.wrap_obj(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}})::IdDict{Any, Any})::NamedTuple, libMad.MadNLPSolver, libMad.wrap_obj(nlp_ptr::Ptr{libMad.CNLPModel{Float64}})::libMad.CNLPModel{Float64})::MadNLP.MadNLPSolver
+Stacktrace:
+ [1] madnlp_create_solver(solver_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPSolver}}, nlp_ptr::Ptr{libMad.CNLPModel{Float64}}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:14
+
+Verifier error #8: unresolved call from statement libMad.MadNLPSolver(libMad.wrap_obj(nlp_ptr::Ptr{libMad.CNLPModel{Float64}})::libMad.CNLPModel{Float64})::MadNLP.MadNLPSolver
+Stacktrace:
+ [1] madnlp_create_solver(solver_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPSolver}}, nlp_ptr::Ptr{libMad.CNLPModel{Float64}}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:14
+
+Verifier error #9: unresolved call from statement Core.kwcall(Base.merge($(QuoteNode(NamedTuple())), libMad.madnlp_to_parameters(libMad.wrap_obj(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}})::IdDict{Any, Any})::NamedTuple, libMad.MadNLPSolver, libMad.wrap_obj(nlp_ptr::Ptr{libMad.CNLPModel{Float64}})::libMad.CNLPModel{Float64})::MadNLP.MadNLPSolver
+Stacktrace:
+ [1] madnlp_create_solver(solver_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPSolver}}, nlp_ptr::Ptr{libMad.CNLPModel{Float64}}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:14
+
+Verifier error #10: unresolved call from statement Core._apply_iterate(Base.iterate, Core.tuple, %new()::Vector{Symbol})::Tuple{Vararg{Symbol}}
+Stacktrace:
+ [1] merge(a::@NamedTuple{}, itr::IdDict{Any, Any})
+   @ Base namedtuple.jl:379
+ [2] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, Vector{Float64}}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #11: unresolved call from statement Core._apply_iterate(Base.iterate, Core.tuple, %new()::Vector{Any})::Tuple
+Stacktrace:
+ [1] merge(a::@NamedTuple{}, itr::IdDict{Any, Any})
+   @ Base namedtuple.jl:379
+ [2] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, Vector{Float64}}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #12: unresolved call from statement Base.convert(IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}, ccall(:jl_value_ptr)::Any)::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}
+Stacktrace:
+ [1] wrap_obj(ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})
+   @ libMad ~/syscop/software/libmad/src/utils.jl:7
+ [2] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, Vector{Float64}}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:50
+
+Verifier error #13: unresolved call from statement libMad.solve!(libMad.wrap_obj(solver_ptr::Ptr{MadNLP.MadNLPSolver})::MadNLP.MadNLPSolver)::MadNLP.MadNLPExecutionStats
+Stacktrace:
+ [1] madnlp_solve(solver_ptr::Ptr{MadNLP.MadNLPSolver}, opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}}, stats_ptr_ptr::Ptr{Ptr{MadNLP.MadNLPExecutionStats{Float64, Vector{Float64}}}})
+   @ libMad ~/syscop/software/libmad/src/solver.jl:53
+
+Verifier error #14: unresolved call from statement Core.kwcall(Base.merge($(QuoteNode(NamedTuple())), libMad.madnlp_to_parameters(libMad.wrap_obj(opts_ptr::Ptr{IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}}})::IdDict{String, Union{Float32, Float64, Int32, Int64, String, Symbol, Type, Enum}})::IdDict{Any, Any})::NamedTuple, libMad.solve!, libMad.wrap_obj(solver_ptr::Ptr{MadNLP.MadNLPSolver})::MadNLP.MadNLPSolver)::MadNLP.MadNLPExecutionStats

@@ -1,4 +1,4 @@
-function obj(stats::MadNLPExecutionStats{T, VT})::T where {T,VT}
+function obj(stats::MadNLPExecutionStats{T})::T where {T}
     return stats.objective
 end
 
@@ -22,11 +22,11 @@ function multipliers_U(stats::MadNLPExecutionStats{T, VT})::VT where {T,VT}
     return stats.multipliers_U
 end
 
-function get_n(stats::MadNLPExecutionStats)
+function get_n(stats::MadNLPExecutionStats)::Int
     return length(stats.solution)
 end
 
-function get_m(stats::MadNLPExecutionStats)
+function get_m(stats::MadNLPExecutionStats)::Int
     return length(stats.constraints)
 end
 

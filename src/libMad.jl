@@ -13,6 +13,7 @@ libmad_refs::Dict{Ptr, Any} = Dict{Ptr, Any}()
 function_sigs::Vector{String} = []
 dummy_structs::Vector{String} = []
 
+include("utils.jl")
 include("options.jl")
 include("nlpmodels.jl")
 include("solver.jl")
@@ -45,18 +46,18 @@ const madnlp_type_dict = Dict(
     "dual_initialization_method" => DIO_DICT,
 )
 
+include("madnlp/stats.jl")
+
 @opts(madnlp, MadNLPOptions{Cdouble}, libMad.madnlp_type_dict)
 #@opts_dict(MadNLPOptions{Cdouble}, MadNLPOptsDict, madnlp_type_dict)
 
 # Create stats
-@stats(madnlp, MadNLPExecutionStats{Cdouble, AbstractVector{Cdouble}})
+@stats(madnlp, MadNLPExecutionStats{Cdouble, Vector{Cdouble}})
 
 # Now create solver interface
-@solver(madnlp, MadNLPSolver{Cdouble}, MadNLPOptsDict, MadNLPExecutionStats{Cdouble, AbstractVector{Cdouble}})
-
-include("madnlp/stats.jl")
+@solver(madnlp, MadNLPSolver{Cdouble,Vector{Cdouble}}, MadNLPOptsDict, MadNLPExecutionStats{Cdouble, Vector{Cdouble}})
 
 # Precompile workload for madnlp
-#include("madnlp/workload_precomp.jl")
+include("madnlp/workload_precomp.jl")
 
 end # module libMad

@@ -111,16 +111,16 @@ end
     c_eval_h = @cfunction(eval_h, Cint, (Cdouble, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}))
 
     # Structures
-    opts_ptr_vec = Vector{Ptr{libMad.MadNLPOptsDict}}([C_NULL])
+    opts_ptr_vec = Vector{Ptr{Cvoid}}([C_NULL])
     opts_ptr = opts_ptr_vec[1]
     opts_ptr_ptr = pointer(opts_ptr_vec)
-    nlp_ptr_vec = Vector{Ptr{libMad.CNLPModel{Cdouble}}}([C_NULL])
+    nlp_ptr_vec = Vector{Ptr{Cvoid}}([C_NULL])
     nlp_ptr = nlp_ptr_vec[1]
     nlp_ptr_ptr = pointer(nlp_ptr_vec)
-    solver_ptr_vec = Vector{Ptr{MadNLP.MadNLPSolver}}([C_NULL])
+    solver_ptr_vec = Vector{Ptr{Cvoid}}([C_NULL])
     solver_ptr = solver_ptr_vec[1]
     solver_ptr_ptr = pointer(solver_ptr_vec)
-    stats_ptr_vec = Vector{Ptr{MadNLP.MadNLPExecutionStats}}([C_NULL])
+    stats_ptr_vec = Vector{Ptr{Cvoid}}([C_NULL])
     stats_ptr = stats_ptr_vec[1]
     stats_ptr_ptr = pointer(stats_ptr_vec)
 
@@ -158,7 +158,7 @@ end
                                                C_NULL
                                                )
                     nlp_ptr = nlp_ptr_vec[1]
-                    libMad.madnlpoptions_create_options_struct(opts_ptr_ptr)
+                    libMad.libmad_create_options_dict(opts_ptr_ptr)
                     opts_ptr = opts_ptr_vec[1]
 
                     _tol = "tol"
@@ -168,12 +168,12 @@ end
                     _linear_solver = "linear_solver"
                     _SparseCallback = "SparseCallback"
                     _hessian_constant = "hessian_constant"
-                    libMad.madnlpoptions_set_float64_option(opts_ptr, unsafe_convert(Cstring,_tol), Cdouble(1e-6))
-                    libMad.madnlpoptions_set_int64_option(opts_ptr, unsafe_convert(Cstring,_max_iter), 2000)
-                    #madnlpoptions_set_int64_option(opts_ptr, unsafe_convert(Cstring,_print_level), 1)
-                    libMad.madnlpoptions_set_string_option(opts_ptr, unsafe_convert(Cstring,_callback), unsafe_convert(Cstring,_SparseCallback))
-                    libMad.madnlpoptions_set_string_option(opts_ptr, unsafe_convert(Cstring,_linear_solver), unsafe_convert(Cstring,ls))
-                    libMad.madnlpoptions_set_bool_option(opts_ptr, unsafe_convert(Cstring,_hessian_constant), false)
+                    libMad.libmad_set_double_option(opts_ptr, unsafe_convert(Cstring,_tol), Cdouble(1e-6))
+                    libMad.libmad_set_long_option(opts_ptr, unsafe_convert(Cstring,_max_iter), 2000)
+                    #libmad_set_int64_option(opts_ptr, unsafe_convert(Cstring,_print_level), 1)
+                    libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_callback), unsafe_convert(Cstring,_SparseCallback))
+                    libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_linear_solver), unsafe_convert(Cstring,ls))
+                    libMad.libmad_set_bool_option(opts_ptr, unsafe_convert(Cstring,_hessian_constant), false)
 
                     libMad.madnlp_create_solver(solver_ptr_ptr, nlp_ptr, opts_ptr)
                     solver_ptr = solver_ptr_vec[1]

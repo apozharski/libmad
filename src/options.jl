@@ -4,7 +4,7 @@ abstract type AbstractOption end
 
 const ABSTRACT_OPTS = Union{MadNLP.AbstractBarrierUpdate}
 
-const ConcreteOption = Union{AbstractFloat, Integer, Type, String, Symbol, Enum}
+const ConcreteOption = Union{Float32, Float64, Int32, Int64, Type, String, Symbol, Enum{Int32}, Enum{Int64}, Bool}
 const Path = String
 const Guard = Tuple{Path, Type}
 const Guards = Vector{Guard}
@@ -14,7 +14,7 @@ const PathWithGuards = Tuple{Path, Guards}
 
 # New interface, using strings and deferring errors to solver creation
 # TODO(@anton) verify lhs is a valid dotstring
-const OptsDict = Dict{String, ConcreteOption}
+const OptsDict = IdDict{String, ConcreteOption}
 push!(dummy_structs, "OptsDict")
 
 function get_populated_subpaths!(dict::OptsDict, path::Path)
@@ -442,9 +442,9 @@ function generate_string_to_type_suboptions_checks(path_type_options)
         for (tstring, type) in typedict
             check = quote
                 if path == $(path) && type == $(tstring)
-                    subpath_args = NamedTuple()
+                    subpath_args = IdDict()
                     for (sk, sv) in subpaths
-                        subpath_args = merge(subpath_args, ((Symbol(sk),sv),))
+                        push!(subpath_args, (Symbol(sk),sv))
                     end
                     $(Symbol(tstring,:_suboptions)) = $(type)(;subpath_args)
                     push!(params, (path, $(Symbol(tstring,:_suboptions))))
@@ -477,7 +477,7 @@ function generate_string_to_type_checks(typedict_expr)
 end
 
 push!(function_sigs, "int libmad_create_options_dict(OptsDict** opts_ptr)")
-Base.@ccallable function libmad_create_options_dict(opts_ptr_ptr::Ptr{Ptr{OptsDict}})::Cint
+Base.@ccallable function libmad_create_options_dict(opts_ptr_ptr::Ptr{Ptr{Cvoid}})::Cint
     opts = OptsDict()
     opts_ptr = Ptr{OptsDict}(pointer_from_objref(opts))
     libmad_refs[opts_ptr] = opts
@@ -490,18 +490,18 @@ for type in [Int32, Int64, Float32, Float64, Bool]
     push!(function_sigs, "int libmad_set_$(to_c_name(type))_option(OptsDict* opts_ptr, char* name, $(to_c_name(type)) val)")
     fname = "libmad_set_$(to_c_name(type))_option"
     @eval begin
-        Base.@ccallable function $(Symbol(fname))(opts_ptr::Ptr{OptsDict}, name::Cstring, val::$(Symbol(type)))::Cint
-            opts::OptsDict = unsafe_pointer_to_objref(opts_ptr)::OptsDict
-            push!(opts, String(unsafe_string(name))=>val)
+        Base.@ccallable function $(Symbol(fname))(opts_ptr::Ptr{Cvoid}, name::Cstring, val::$(Symbol(type)))::Cint
+            opts = wrap_obj(OptsDict, opts_ptr)
+            setindex!(opts, val, String(unsafe_string(name)))
             return Cint(0)
         end
     end
 end
 
 push!(function_sigs, "int libmad_set_string_option(OptsDict* opts_ptr, char* name, char* val)")
-Base.@ccallable function libmad_set_string_option(opts_ptr::Ptr{OptsDict}, name::Cstring, val::Cstring)::Cint
-    opts::OptsDict = unsafe_pointer_to_objref(opts_ptr)::OptsDict
-    push!(opts, String(unsafe_string(name))=>String(unsafe_string(val)))
+Base.@ccallable function libmad_set_string_option(opts_ptr::Ptr{Cvoid}, name::Cstring, val::Cstring)::Cint
+    opts = wrap_obj(OptsDict, opts_ptr)
+    setindex!(opts, String(unsafe_string(val)), String(unsafe_string(name)))
     return Cint(0)
 end
 
@@ -563,7 +563,7 @@ function generate_to_parameters(prefix, typedict_expr, valid_paths, path_guards,
     #              We need to think about restricting the interface.
     # TODO(@anton) This currently defers errors to the solver call if the types passed are wrong.
     to_params = quote
-        function $(Symbol(prefix, :_to_parameters))(opts::OptsDict)::NamedTuple
+        function $(Symbol(prefix, :_to_parameters))(opts::OptsDict)#::NamedTuple
             # Takes a dict and walks it to create a flat dict with the proper types
             params::OptsDict = OptsDict(opts)::OptsDict
             path_type_options = $(path_type_options)
@@ -585,12 +585,12 @@ function generate_to_parameters(prefix, typedict_expr, valid_paths, path_guards,
             for (path, val) in params
                 $(generate_string_to_type_checks(typedict_expr))
             end
-            params_out = NamedTuple()
+            dict_out = IdDict()
             for (path, val) in params
                 # TODO(@anton) check that path is length one
-                params_out = merge(params_out, ((Symbol(path),val),))
+                setindex!(dict_out, val, Symbol(path))
             end
-            return params_out
+            return dict_out
         end
     end
 

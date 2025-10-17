@@ -125,7 +125,7 @@ c_eval_grad_f = @cfunction(eval_grad_f, Cint, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{C
 c_eval_jac_g = @cfunction(eval_jac_g, Cint, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}))
 c_eval_h = @cfunction(eval_h, Cint, (Cdouble, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}))
 
-opts_ptr_vec = Vector{Ptr{libMad.MadNLPOptsDict}}([C_NULL])
+opts_ptr_vec = Vector{Ptr{libMad.OptsDict}}([C_NULL])
 opts_ptr = opts_ptr_vec[1]
 opts_ptr_ptr = pointer(opts_ptr_vec)
 nlp_ptr_vec = Vector{Ptr{libMad.CNLPModel{Cdouble}}}([C_NULL])
