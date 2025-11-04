@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.17)
 project(libMad)
 
-option(JULIAC_FLAGS "Additional flags for juliac" "")
+if(NOT JULIAC_FLAGS)
+    set(JULIAC_FLAGS "")
+endif()
 
 message(CHECK_START "Check Juliaup Executable")
 set(JULIAUP_EXECUTABLE "juliaup" CACHE STRING "Juliaup executable default")
@@ -52,7 +54,7 @@ else()
   message(CHECK_PASS "Compatible julia version: ${JULIA_VERSION}")
 endif()
 
-
+message("${JULIA_EXECUTABLE}")
 # detect Julia binary dir
 if(NOT DEFINED JULIA_BINDIR)
     # The executable could be a chocolatey shim, so run some Julia code to report
@@ -79,7 +81,7 @@ add_custom_command(
   OUTPUT ${PROJECT_BINARY_DIR}/lib/libMad.so
   ${PROJECT_BINARY_DIR}/lib
   ${PROJECT_BINARY_DIR}/share
-  COMMAND juliac --project ${PROJECT_SOURCE_DIR} --compile-ccallable --bundle ${PROJECT_BINARY_DIR} --experimental ${JULIAC_FLAGS} --output-lib ${PROJECT_BINARY_DIR}/libMad ${PROJECT_SOURCE_DIR}/src/recipe.jl
+  COMMAND juliac  --compile-ccallable --bundle ${PROJECT_BINARY_DIR} --experimental ${JULIAC_FLAGS} --output-lib ${PROJECT_BINARY_DIR}/libMad ${PROJECT_SOURCE_DIR}
   DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
   ${PROJECT_SOURCE_DIR}/src/utils.jl
   ${PROJECT_SOURCE_DIR}/src/options.jl

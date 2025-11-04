@@ -99,8 +99,8 @@ int main(int argc, char** argv)
   libmad_create_options_dict(&opts3_ptr);
 	libmad_set_double_option(opts1_ptr, "tol", 1e-8);
 	libmad_set_string_option(opts1_ptr, "linear_solver", "LapackCPUSolver");
-	libmad_set_string_option(opts2_ptr, "linear_solver", "LDLSolver");
-	libmad_set_string_option(opts3_ptr, "linear_solver", "UmfpackSolver");
+	libmad_set_string_option(opts2_ptr, "linear_solver", "Ma97Solver");
+	libmad_set_string_option(opts3_ptr, "linear_solver", "Ma27Solver");
   madnlp_create_solver(&solver1_ptr, nlp_ptr, opts1_ptr);
   madnlp_create_solver(&solver2_ptr, nlp_ptr, opts2_ptr);
   madnlp_create_solver(&solver3_ptr, nlp_ptr, opts3_ptr);

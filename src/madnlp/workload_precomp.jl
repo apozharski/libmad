@@ -142,61 +142,65 @@ end
         for kkt in keys(KKT_DICT)
             GC.@preserve x0 lvar uvar lcon ucon begin
                 @compile_workload begin
+                    try
+                        _name = "aname"
+                        libMad.nlpmodel_cpu_create(nlp_ptr_ptr,
+                                                   unsafe_convert(Cstring,_name),
+                                                   nvar, ncon,
+                                                   2, 3,
+                                                   pointer(x0),
+                                                   pointer(lvar), pointer(uvar),
+                                                   pointer(lcon), pointer(ucon),
+                                                   c_jac_struct, c_hess_struct,
+                                                   c_eval_f, c_eval_g,
+                                                   c_eval_grad_f, c_eval_jac_g,
+                                                   c_eval_h,
+                                                   C_NULL
+                                                   )
+                        nlp_ptr = nlp_ptr_vec[1]
+                        libMad.libmad_create_options_dict(opts_ptr_ptr)
+                        opts_ptr = opts_ptr_vec[1]
 
-                    _name = "aname"
-                    libMad.nlpmodel_cpu_create(nlp_ptr_ptr,
-                                               unsafe_convert(Cstring,_name),
-                                               nvar, ncon,
-                                               2, 3,
-                                               pointer(x0),
-                                               pointer(lvar), pointer(uvar),
-                                               pointer(lcon), pointer(ucon),
-                                               c_jac_struct, c_hess_struct,
-                                               c_eval_f, c_eval_g,
-                                               c_eval_grad_f, c_eval_jac_g,
-                                               c_eval_h,
-                                               C_NULL
-                                               )
-                    nlp_ptr = nlp_ptr_vec[1]
-                    libMad.libmad_create_options_dict(opts_ptr_ptr)
-                    opts_ptr = opts_ptr_vec[1]
+                        _tol = "tol"
+                        _max_iter = "max_iter"
+                        _print_level = "print_level"
+                        _callback = "callback"
+                        _linear_solver = "linear_solver"
+                        _SparseCallback = "SparseCallback"
+                        _hessian_constant = "hessian_constant"
+                        libMad.libmad_set_double_option(opts_ptr, unsafe_convert(Cstring,_tol), Cdouble(1e-6))
+                        libMad.libmad_set_long_option(opts_ptr, unsafe_convert(Cstring,_max_iter), 2000)
+                        #libmad_set_int64_option(opts_ptr, unsafe_convert(Cstring,_print_level), 1)
+                        libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_callback), unsafe_convert(Cstring,_SparseCallback))
+                        libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_linear_solver), unsafe_convert(Cstring,ls))
+                        libMad.libmad_set_bool_option(opts_ptr, unsafe_convert(Cstring,_hessian_constant), false)
 
-                    _tol = "tol"
-                    _max_iter = "max_iter"
-                    _print_level = "print_level"
-                    _callback = "callback"
-                    _linear_solver = "linear_solver"
-                    _SparseCallback = "SparseCallback"
-                    _hessian_constant = "hessian_constant"
-                    libMad.libmad_set_double_option(opts_ptr, unsafe_convert(Cstring,_tol), Cdouble(1e-6))
-                    libMad.libmad_set_long_option(opts_ptr, unsafe_convert(Cstring,_max_iter), 2000)
-                    #libmad_set_int64_option(opts_ptr, unsafe_convert(Cstring,_print_level), 1)
-                    libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_callback), unsafe_convert(Cstring,_SparseCallback))
-                    libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_linear_solver), unsafe_convert(Cstring,ls))
-                    libMad.libmad_set_bool_option(opts_ptr, unsafe_convert(Cstring,_hessian_constant), false)
+                        libMad.madnlp_create_solver(solver_ptr_ptr, nlp_ptr, opts_ptr)
+                        solver_ptr = solver_ptr_vec[1]
+                        libMad.madnlp_solve(solver_ptr, opts_ptr, stats_ptr_ptr)
+                        stats_ptr = stats_ptr_vec[1]
 
-                    libMad.madnlp_create_solver(solver_ptr_ptr, nlp_ptr, opts_ptr)
-                    solver_ptr = solver_ptr_vec[1]
-                    libMad.madnlp_solve(solver_ptr, opts_ptr, stats_ptr_ptr)
-                    stats_ptr = stats_ptr_vec[1]
+                        libMad.madnlp_get_success(stats_ptr, pointer(o_success))
+                        libMad.madnlp_get_obj(stats_ptr, pointer(o_obj))
+                        libMad.madnlp_get_solution(stats_ptr, pointer(o_solution))
+                        libMad.madnlp_get_multipliers(stats_ptr, pointer(o_multipliers))
+                        libMad.madnlp_get_constraints(stats_ptr, pointer(o_constraints))
+                        libMad.madnlp_get_multipliers_L(stats_ptr, pointer(o_multipliers_L))
+                        libMad.madnlp_get_multipliers_U(stats_ptr, pointer(o_multipliers_U))
 
-                    libMad.madnlp_get_success(stats_ptr, pointer(o_success))
-                    libMad.madnlp_get_obj(stats_ptr, pointer(o_obj))
-                    libMad.madnlp_get_solution(stats_ptr, pointer(o_solution))
-                    libMad.madnlp_get_multipliers(stats_ptr, pointer(o_multipliers))
-                    libMad.madnlp_get_constraints(stats_ptr, pointer(o_constraints))
-                    libMad.madnlp_get_multipliers_L(stats_ptr, pointer(o_multipliers_L))
-                    libMad.madnlp_get_multipliers_U(stats_ptr, pointer(o_multipliers_U))
+                        println("success: $(o_success)")
+                        println("obj: $(o_obj)")
+                        println("solution: $(o_solution)")
+                        println("multipliers: $(o_multipliers)")
+                        println("constraints: $(o_constraints)")
+                        println("multipliers_U: $(o_multipliers_U)")
+                        println("multipliers_L: $(o_multipliers_L)")
 
-                    println("success: $(o_success)")
-                    println("obj: $(o_obj)")
-                    println("solution: $(o_solution)")
-                    println("multipliers: $(o_multipliers)")
-                    println("constraints: $(o_constraints)")
-                    println("multipliers_U: $(o_multipliers_U)")
-                    println("multipliers_L: $(o_multipliers_L)")
-
-                    libMad.madnlp_delete_solver(solver_ptr)
+                        libMad.madnlp_delete_solver(solver_ptr)
+                    catch
+                        println("$((ls, kkt)) failed")
+                    finally
+                    end
                 end
             end
         end
