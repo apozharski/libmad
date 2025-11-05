@@ -30,7 +30,6 @@ JuliaLocalPreferences.toml
 #
 *.so
 
-build/
-build_trim/
+build*/
 
 *~
