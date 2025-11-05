@@ -82,17 +82,18 @@ int main(int argc, char** argv)
   double* ucon = malloc(1*sizeof(double));
   ucon[0] = 1;
 
-  nlpmodel_cpu_create(&nlp_ptr, "test_model",
+  libmad_nlpmodel_create(&nlp_ptr, "test_model",
 		      2, 1,
 		      2, 2,
-		      x0,
-		      lvar, uvar,
-		      lcon, ucon,
 		      &jac_structure, &hess_structure,
 		      &obj, &cons,
 		      &grad, &jac_coord,
 		      &hess_coord,
 		      NULL);
+	libmad_nlpmodel_set_numerics(nlp_ptr,
+															 x0, NULL,
+															 lvar, uvar,
+															 lcon, ucon);
 
   libmad_create_options_dict(&opts1_ptr);
   libmad_create_options_dict(&opts2_ptr);

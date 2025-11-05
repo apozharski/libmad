@@ -13,6 +13,14 @@ function multipliers_L(stats::AbstractExecutionStats) end
 
 function multipliers_U(stats::AbstractExecutionStats) end
 
+function iters(stats::AbstractExecutionStats) end
+
+function primal_feas(stats::AbstractExecutionStats) end
+
+function dual_feas(stats::AbstractExecutionStats) end
+
+function status(stats::AbstractExecutionStats) end
+
 function get_n(stats::AbstractExecutionStats) end
 
 function get_m(stats::AbstractExecutionStats) end
@@ -79,11 +87,57 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
+    push!(function_sigs, "int $(solname)_get_bound_multipliers($(String(nameof(eval(stats_expr))))* stats_ptr, double* out)")
+    _bound_multipliers = quote
+        Base.@ccallable function $(Symbol(solname, :_get_bound_multipliers))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
+            stats = wrap_obj($(stats_expr),stats_ptr)
+            out_arr = wrap_ptr(out, get_n(stats))
+            out_arr .= multipliers_U(stats) .- multipliers_L(stats)
+            return Cint(0)
+        end
+    end
+
     push!(function_sigs, "int $(solname)_get_success($(String(nameof(eval(stats_expr))))* stats_ptr, bool* out)")
     _success = quote
         Base.@ccallable function $(Symbol(solname, :_get_success))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cuchar})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
             unsafe_store!(out, success(stats))
+            return Cint(0)
+        end
+    end
+
+    push!(function_sigs, "int $(solname)_get_iters($(String(nameof(eval(stats_expr))))* stats_ptr, long* out)")
+    _iters = quote
+        Base.@ccallable function $(Symbol(solname, :_get_iters))(stats_ptr::Ptr{Cvoid}, out::Ptr{Clong})::Cint
+            stats = wrap_obj($(stats_expr),stats_ptr)
+            unsafe_store!(out, iters(stats))
+            return Cint(0)
+        end
+    end
+
+    push!(function_sigs, "int $(solname)_get_primal_feas($(String(nameof(eval(stats_expr))))* stats_ptr, long* out)")
+    _primal_feas = quote
+        Base.@ccallable function $(Symbol(solname, :_get_primal_feas))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
+            stats = wrap_obj($(stats_expr),stats_ptr)
+            unsafe_store!(out, primal_feas(stats))
+            return Cint(0)
+        end
+    end
+
+    push!(function_sigs, "int $(solname)_get_dual_feas($(String(nameof(eval(stats_expr))))* stats_ptr, long* out)")
+    _dual_feas = quote
+        Base.@ccallable function $(Symbol(solname, :_get_dual_feas))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
+            stats = wrap_obj($(stats_expr),stats_ptr)
+            unsafe_store!(out, dual_feas(stats))
+            return Cint(0)
+        end
+    end
+
+    push!(function_sigs, "int $(solname)_get_status($(String(nameof(eval(stats_expr))))* stats_ptr, long* out)")
+    _status = quote
+        Base.@ccallable function $(Symbol(solname, :_get_status))(stats_ptr::Ptr{Cvoid}, out::Ptr{Clong})::Cint
+            stats = wrap_obj($(stats_expr),stats_ptr)
+            unsafe_store!(out, status(stats))
             return Cint(0)
         end
     end
@@ -95,7 +149,12 @@ function generate_stats_getters(solname, stats_expr)
         $(_multipliers)
         $(_multipliers_L)
         $(_multipliers_U)
+        $(_bound_multipliers)
         $(_success)
+        $(_iters)
+        $(_primal_feas)
+        $(_dual_feas)
+        $(_status)
     end
 end
 

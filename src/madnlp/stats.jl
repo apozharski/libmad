@@ -34,3 +34,19 @@ function success(stats::MadNLPExecutionStats{T, VT}) where {T,VT}
     return MadNLP.SOLVE_SUCCEEDED <= stats.status <= MadNLP.SOLVED_TO_ACCEPTABLE_LEVEL
     # TODO SEARCH_DIRECTION_BECOMES_TOO_SMALL is not technically a success but might be
 end
+
+function iters(stats::MadNLPExecutionStats)
+    return stats.iter
+end
+
+function primal_feas(stats::MadNLPExecutionStats{T}) where T
+    return stats.primal_feas
+end
+
+function dual_feas(stats::MadNLPExecutionStats{T}) where T
+    return stats.dual_feas
+end
+
+function status(stats::MadNLPExecutionStats)
+    return Int(stats.status)
+end

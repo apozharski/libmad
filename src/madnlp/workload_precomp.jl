@@ -133,6 +133,7 @@ end
     o_multipliers = Vector{Cdouble}(undef, 1)
 
     x0 = Vector{Cdouble}([1.0, 1.0])
+
     println(x0)
     lvar = Vector{Cdouble}([-Inf, -Inf])
     uvar = Vector{Cdouble}([Inf, Inf])
@@ -144,19 +145,23 @@ end
                 @compile_workload begin
                     try
                         _name = "aname"
-                        libMad.nlpmodel_cpu_create(nlp_ptr_ptr,
-                                                   unsafe_convert(Cstring,_name),
-                                                   nvar, ncon,
-                                                   2, 3,
-                                                   pointer(x0),
-                                                   pointer(lvar), pointer(uvar),
-                                                   pointer(lcon), pointer(ucon),
-                                                   c_jac_struct, c_hess_struct,
-                                                   c_eval_f, c_eval_g,
-                                                   c_eval_grad_f, c_eval_jac_g,
-                                                   c_eval_h,
-                                                   C_NULL
-                                                   )
+                        libMad.libmad_nlpmodel_create(nlp_ptr_ptr,
+                                                      unsafe_convert(Cstring,_name),
+                                                      nvar, ncon,
+                                                      2, 3,
+                                                      c_jac_struct, c_hess_struct,
+                                                      c_eval_f, c_eval_g,
+                                                      c_eval_grad_f, c_eval_jac_g,
+                                                      c_eval_h,
+                                                      C_NULL
+                                                      )
+                        nlp_ptr = nlp_ptr_vec[1]
+                        libMad.libmad_nlpmodel_set_numerics(nlp_ptr,
+                                                           pointer(x0), Ptr{Cdouble}(C_NULL),
+                                                           pointer(lvar), pointer(uvar),
+                                                           pointer(lcon), pointer(ucon)
+                                                           )
+
                         nlp_ptr = nlp_ptr_vec[1]
                         libMad.libmad_create_options_dict(opts_ptr_ptr)
                         opts_ptr = opts_ptr_vec[1]
@@ -197,7 +202,8 @@ end
                         println("multipliers_L: $(o_multipliers_L)")
 
                         libMad.madnlp_delete_solver(solver_ptr)
-                    catch
+                    catch e
+                        display(e)
                         println("$((ls, kkt)) failed")
                     finally
                     end

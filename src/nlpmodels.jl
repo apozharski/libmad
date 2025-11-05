@@ -12,44 +12,32 @@ mutable struct CNLPModel{T, VT<:AbstractVector{T}} <: AbstractNLPModel{T,VT}
     user_data::Ptr{Cvoid}
 end
 
-push!(function_sigs, """int nlpmodel_cpu_create(CNLPModel** nlp_ptr_ptr,
-                                                char* name,
-                                                long nvar, long ncon,
-                                                long nnzj, long nnzh,
-                                                double* x0,
-                                                double* lvar, double* uvar,
-                                                double* lcon, double* ucon,
-                                                void* jac_struct, void* hess_struct,
-                                                void* eval_f, void* eval_g,
-                                                void* eval_grad_f, void* eval_jac_g,
-                                                void* eval_h,
-                                                void* user_data)"""
-      )
 push!(dummy_structs, "CNLPModel")
+push!(function_sigs, """int libmad_nlpmodel_create(CNLPModel** nlp_ptr_ptr,
+                                                   char* name,
+                                                   long nvar, long ncon,
+                                                   long nnzj, long nnzh,
+                                                   void* jac_struct, void* hess_struct,
+                                                   void* eval_f, void* eval_g,
+                                                   void* eval_grad_f, void* eval_jac_g,
+                                                   void* eval_h,
+                                                   void* user_data)"""
+      )
 
-Base.@ccallable function nlpmodel_cpu_create(nlp_ptr_ptr::Ptr{Ptr{Cvoid}},
-                                             name::Cstring,
-                                             nvar::Clong, ncon::Clong,
-                                             nnzj::Clong, nnzh::Clong,
-                                             x0::Ptr{Cdouble},
-                                             lvar::Ptr{Cdouble}, uvar::Ptr{Cdouble},
-                                             lcon::Ptr{Cdouble}, ucon::Ptr{Cdouble},
-                                             jac_struct::Ptr{Cvoid}, hess_struct::Ptr{Cvoid},
-                                             eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
-                                             eval_grad_f::Ptr{Cvoid}, eval_jac_g::Ptr{Cvoid},
-                                             eval_h::Ptr{Cvoid},
-                                             user_data::Ptr{Cvoid})::Cint
+Base.@ccallable function libmad_nlpmodel_create(nlp_ptr_ptr::Ptr{Ptr{Cvoid}},
+                                                name::Cstring,
+                                                nvar::Clong, ncon::Clong,
+                                                nnzj::Clong, nnzh::Clong,
+                                                jac_struct::Ptr{Cvoid}, hess_struct::Ptr{Cvoid},
+                                                eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
+                                                eval_grad_f::Ptr{Cvoid}, eval_jac_g::Ptr{Cvoid},
+                                                eval_h::Ptr{Cvoid},
+                                                user_data::Ptr{Cvoid})::Cint
     meta = NLPModelMeta(
         nvar,
         ncon = ncon,
         nnzj = nnzj,
         nnzh = nnzh,
-        x0 = unsafe_wrap(Vector{Cdouble}, x0, nvar),
-        #y0 = unsafe_wrap(Vector{Cdouble}, y0, ncon),
-        lvar = unsafe_wrap(Vector{Cdouble}, lvar, nvar),
-        uvar = unsafe_wrap(Vector{Cdouble}, uvar, nvar),
-        lcon = unsafe_wrap(Vector{Cdouble}, lcon, ncon),
-        ucon = unsafe_wrap(Vector{Cdouble}, ucon, ncon),
         name = unsafe_string(name),
         minimize = true
     )
@@ -73,6 +61,39 @@ Base.@ccallable function nlpmodel_cpu_create(nlp_ptr_ptr::Ptr{Ptr{Cvoid}},
     return Cint(0)
 end
 
+push!(function_sigs, """int libmad_nlpmodel_set_numerics(CNLPModel* nlp_ptr,
+                                                         double* x0, double* y0,
+                                                         double* lvar, double* uvar,
+                                                         double* lcon, double* ucon
+                                                        )"""
+      )
+Base.@ccallable function libmad_nlpmodel_set_numerics(nlp_ptr::Ptr{Cvoid},
+                                                      x0::Ptr{Cdouble}, y0::Ptr{Cdouble},
+                                                      lvar::Ptr{Cdouble}, uvar::Ptr{Cdouble},
+                                                      lcon::Ptr{Cdouble}, ucon::Ptr{Cdouble},
+                                                      )::Cint
+    nlp = wrap_obj(CNLPModel, nlp_ptr)
+    if x0 != C_NULL
+        nlp.meta.x0 .= wrap_ptr(x0, nlp.meta.nvar)
+    end
+    if y0 != C_NULL
+        nlp.meta.y0 .= wrap_ptr(y0, nlp.meta.ncon)
+    end
+    if lvar != C_NULL
+        nlp.meta.lvar .= wrap_ptr(lvar, nlp.meta.nvar)
+    end
+    if uvar != C_NULL
+        nlp.meta.uvar .= wrap_ptr(uvar, nlp.meta.nvar)
+    end
+    if lcon != C_NULL
+        nlp.meta.lcon .= wrap_ptr(lcon, nlp.meta.ncon)
+    end
+    if ucon != C_NULL
+        nlp.meta.ucon .= wrap_ptr(ucon, nlp.meta.ncon)
+    end
+
+    return Cint(0)
+end
 
 function NLPModels.jac_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::AbstractVector{T}) where T
     I_ = Base.unsafe_convert(Ptr{Clong}, I)
