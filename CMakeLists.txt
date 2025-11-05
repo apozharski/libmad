@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(libMad)
+include(CMakePackageConfigHelpers)
+include(CMakePrintHelpers)
 
 if(NOT JULIAC_FLAGS)
     set(JULIAC_FLAGS "")
@@ -117,8 +119,24 @@ set_target_properties(libMad
   IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/lib/libMad.so
 )
 
-target_include_directories(libMad INTERFACE ${PROJECT_BINARY_DIR} ${JULIA_INCLUDE_DIR})
+target_include_directories(libMad INTERFACE
+  ${PROJECT_BINARY_DIR}
+  ${JULIA_INCLUDE_DIR}
+  $<INSTALL_INTERFACE:include/>
+)
 
 add_executable(basic_problem ${PROJECT_SOURCE_DIR}/examples/basic_problem.c)
 
 target_link_libraries(basic_problem libMad)
+
+## NOW DO INSTALL
+install(
+  DIRECTORY ${PROJECT_BINARY_DIR}/lib
+  DESTINATION .
+)
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/libMad.h
+  DESTINATION
+    include
+)

@@ -2,7 +2,6 @@ module libMad
 using InteractiveUtils
 using MadNLP
 using MadNLPHSL
-#using MadNLPGPU
 using NLPModels
 using PrecompileTools: @setup_workload, @compile_workload, verbose
 using Base: unsafe_convert
