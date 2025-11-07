@@ -1,5 +1,7 @@
 #include "libMad.h"
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 int jac_structure(long* I, long* J, void* user_data)
 {

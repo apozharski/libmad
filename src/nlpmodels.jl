@@ -14,13 +14,13 @@ end
 
 push!(dummy_structs, "CNLPModel")
 push!(function_sigs, """int libmad_nlpmodel_create(CNLPModel** nlp_ptr_ptr,
-                                                   char* name,
+                                                   const char* name,
                                                    long nvar, long ncon,
                                                    long nnzj, long nnzh,
-                                                   void* jac_struct, void* hess_struct,
-                                                   void* eval_f, void* eval_g,
-                                                   void* eval_grad_f, void* eval_jac_g,
-                                                   void* eval_h,
+                                                   NlpConstrJacStructure jac_struct, NlpLagHessStructure hess_struct,
+                                                   NlpEvalObj eval_f, NlpEvalConstr eval_g,
+                                                   NlpEvalObjGrad eval_grad_f, NlpEvalConstrJac eval_jac_g,
+                                                   NlpEvalLagHess eval_h,
                                                    void* user_data)"""
       )
 
@@ -62,9 +62,9 @@ Base.@ccallable function libmad_nlpmodel_create(nlp_ptr_ptr::Ptr{Ptr{Cvoid}},
 end
 
 push!(function_sigs, """int libmad_nlpmodel_set_numerics(CNLPModel* nlp_ptr,
-                                                         double* x0, double* y0,
-                                                         double* lvar, double* uvar,
-                                                         double* lcon, double* ucon
+                                                         const libmad_real* x0, const libmad_real* y0,
+                                                         const libmad_real* lvar, const libmad_real* uvar,
+                                                         const libmad_real* lcon, const libmad_real* ucon
                                                         )"""
       )
 Base.@ccallable function libmad_nlpmodel_set_numerics(nlp_ptr::Ptr{Cvoid},
@@ -110,7 +110,7 @@ function NLPModels.hess_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::Abst
     J_ = Base.unsafe_convert(Ptr{Clong}, J)
     ret = ccall(nlp.hess_struct, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}), I_, J_, nlp.user_data)
     if ret != Cint(0)
-        throw(Exception("CallbackError jac_struct"))
+        throw(Exception("CallbackError hess_struct"))
     end
     return I, J
 end

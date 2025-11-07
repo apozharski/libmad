@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(libMad)
+project(libMad C)
 include(CMakePackageConfigHelpers)
 include(CMakePrintHelpers)
 
@@ -103,6 +103,7 @@ add_custom_command(
   ${PROJECT_SOURCE_DIR}/src/stats.jl
   ${PROJECT_SOURCE_DIR}/src/madnlp.jl
   ${PROJECT_SOURCE_DIR}/src/nlpmodels.jl
+  ${PROJECT_SOURCE_DIR}/scripts/generate_headers.jl
 )
 
 add_custom_target(
@@ -111,13 +112,16 @@ add_custom_target(
   ${PROJECT_BINARY_DIR}/libMad.h
 )
 
-add_library(libMad SHARED IMPORTED GLOBAL)
+add_library(libMad SHARED IMPORTED)
 add_dependencies(libMad libMad_target)
 
 set_target_properties(libMad
   PROPERTIES
   IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/lib/libMad.so
+  IMPORTED_IMPLIB ${PROJECT_BINARY_DIR}/lib/libMad.so
 )
+set_target_properties(libMad PROPERTIES LINKER_LANGUAGE C)
+
 
 target_include_directories(libMad INTERFACE
   ${PROJECT_BINARY_DIR}
@@ -128,6 +132,11 @@ target_include_directories(libMad INTERFACE
 add_executable(basic_problem ${PROJECT_SOURCE_DIR}/examples/basic_problem.c)
 
 target_link_libraries(basic_problem libMad)
+
+cmake_print_properties(TARGETS libMad
+  PROPERTIES LINKER_LANGUAGE
+  IMPORTED_IMPLIB
+)
 
 ## NOW DO INSTALL
 install(
@@ -140,3 +149,7 @@ install(
   DESTINATION
     include
 )
+
+## Export configs
+# export(TARGETS libMad
+#   FILE "${PROJECT_BINARY_DIR}/libmad-targets.cmake")

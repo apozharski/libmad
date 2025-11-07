@@ -372,11 +372,11 @@ function to_c_name(type::Type)
     if type == Int32
         return "int"
     elseif type == Int64
-        return "long"
+        return "libmad_int"
     elseif type == Float32
         return "float"
     elseif type == Float64
-        return "double"
+        return "libmad_real"
     elseif type == Bool
         return "bool"
     else
@@ -405,7 +405,7 @@ function generate_setter(opts_type, dict_type, leaf_type, valid_paths, path_guar
             return Cint(1)
         end
     end
-    push!(function_sigs, "int $(opts_name)_set_$(leaf_name)_option($(dict_type)* opts_ptr, char* name, $(to_c_name(leaf_type)) val)")
+    push!(function_sigs, "int $(opts_name)_set_$(leaf_name)_option($(dict_type)* opts_ptr, const char* name, $(to_c_name(leaf_type)) val)")
     return setter
 end
 
@@ -429,7 +429,7 @@ function generate_string_setter(opts_type, dict_type, valid_paths, path_guards, 
             return Cint(1)
         end
     end
-    push!(function_sigs, "int $(opts_name)_set_string_option($(dict_type)* opts_ptr, char* name, char* val)")
+    push!(function_sigs, "int $(opts_name)_set_string_option($(dict_type)* opts_ptr, const char* name, const char* val)")
     return setter
 end
 
@@ -486,8 +486,9 @@ Base.@ccallable function libmad_create_options_dict(opts_ptr_ptr::Ptr{Ptr{Cvoid}
     return Cint(0)
 end
 
-for type in [Int32, Int64, Float32, Float64, Bool]
-    push!(function_sigs, "int libmad_set_$(to_c_name(type))_option(OptsDict* opts_ptr, char* name, $(to_c_name(type)) val)")
+#for type in [Int32, Int64, Float32, Float64, Bool]
+for type in [Int64, Float64, Bool]
+    push!(function_sigs, "int libmad_set_$(to_c_name(type))_option(OptsDict* opts_ptr, const char* name, $(to_c_name(type)) val)")
     fname = "libmad_set_$(to_c_name(type))_option"
     @eval begin
         Base.@ccallable function $(Symbol(fname))(opts_ptr::Ptr{Cvoid}, name::Cstring, val::$(Symbol(type)))::Cint
@@ -498,11 +499,21 @@ for type in [Int32, Int64, Float32, Float64, Bool]
     end
 end
 
-push!(function_sigs, "int libmad_set_string_option(OptsDict* opts_ptr, char* name, char* val)")
+push!(function_sigs, "int libmad_set_string_option(OptsDict* opts_ptr, const char* name, const char* val)")
 Base.@ccallable function libmad_set_string_option(opts_ptr::Ptr{Cvoid}, name::Cstring, val::Cstring)::Cint
     opts = wrap_obj(OptsDict, opts_ptr)
     setindex!(opts, String(unsafe_string(val)), String(unsafe_string(name)))
     return Cint(0)
+end
+
+push!(function_sigs, "int libmad_delete_options_dict(OptsDict* stats_ptr)")
+Base.@ccallable function libmad_delete_options_dict(opts_ptr::Ptr{Cvoid})::Cint
+    if haskey(libmad_refs, opts_ptr)
+        delete!(libmad_refs, opts_ptr)
+        return Cint(0)
+    else
+        return Cint(1)
+    end
 end
 
 function generate_guard(guard)

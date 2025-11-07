@@ -27,7 +27,7 @@ function get_m(stats::AbstractExecutionStats) end
 
 # macros for defining the stats interfaces
 function generate_stats_getters(solname, stats_expr)
-    push!(function_sigs, "int $(solname)_get_obj($(String(nameof(eval(stats_expr))))* stats_ptr, double* out)")
+    push!(function_sigs, "int $(solname)_get_obj($(String(nameof(eval(stats_expr))))* stats_ptr, libmmad_real* out)")
     _obj = quote
         Base.@ccallable function $(Symbol(solname, :_get_obj))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
             stats = wrap_obj($(stats_expr), stats_ptr)
@@ -36,7 +36,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_solution($(String(nameof(eval(stats_expr))))* stats_ptr, double* out)")
+    push!(function_sigs, "int $(solname)_get_solution($(String(nameof(eval(stats_expr))))* stats_ptr, libmmad_real* out)")
     _solution = quote
         Base.@ccallable function $(Symbol(solname, :_get_solution))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
@@ -47,7 +47,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_constraints($(String(nameof(eval(stats_expr))))* stats_ptr, double* out)")
+    push!(function_sigs, "int $(solname)_get_constraints($(String(nameof(eval(stats_expr))))* stats_ptr, libmmad_real* out)")
     _constraints = quote
         Base.@ccallable function $(Symbol(solname, :_get_constraints))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
@@ -57,7 +57,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_multipliers($(String(nameof(eval(stats_expr))))* stats_ptr, double* out)")
+    push!(function_sigs, "int $(solname)_get_multipliers($(String(nameof(eval(stats_expr))))* stats_ptr, libmmad_real* out)")
     _multipliers = quote
         Base.@ccallable function $(Symbol(solname, :_get_multipliers))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
@@ -67,7 +67,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_multipliers_L($(String(nameof(eval(stats_expr))))* stats_ptr, double* out)")
+    push!(function_sigs, "int $(solname)_get_multipliers_L($(String(nameof(eval(stats_expr))))* stats_ptr, libmmad_real* out)")
     _multipliers_L = quote
         Base.@ccallable function $(Symbol(solname, :_get_multipliers_L))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
@@ -77,7 +77,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_multipliers_U($(String(nameof(eval(stats_expr))))* stats_ptr, double* out)")
+    push!(function_sigs, "int $(solname)_get_multipliers_U($(String(nameof(eval(stats_expr))))* stats_ptr, libmmad_real* out)")
     _multipliers_U = quote
         Base.@ccallable function $(Symbol(solname, :_get_multipliers_U))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
@@ -87,7 +87,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_bound_multipliers($(String(nameof(eval(stats_expr))))* stats_ptr, double* out)")
+    push!(function_sigs, "int $(solname)_get_bound_multipliers($(String(nameof(eval(stats_expr))))* stats_ptr, libmmad_real* out)")
     _bound_multipliers = quote
         Base.@ccallable function $(Symbol(solname, :_get_bound_multipliers))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
@@ -106,7 +106,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_iters($(String(nameof(eval(stats_expr))))* stats_ptr, long* out)")
+    push!(function_sigs, "int $(solname)_get_iters($(String(nameof(eval(stats_expr))))* stats_ptr, libmad_int* out)")
     _iters = quote
         Base.@ccallable function $(Symbol(solname, :_get_iters))(stats_ptr::Ptr{Cvoid}, out::Ptr{Clong})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
@@ -115,7 +115,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_primal_feas($(String(nameof(eval(stats_expr))))* stats_ptr, long* out)")
+    push!(function_sigs, "int $(solname)_get_primal_feas($(String(nameof(eval(stats_expr))))* stats_ptr, libma_real* out)")
     _primal_feas = quote
         Base.@ccallable function $(Symbol(solname, :_get_primal_feas))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
@@ -124,7 +124,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_dual_feas($(String(nameof(eval(stats_expr))))* stats_ptr, long* out)")
+    push!(function_sigs, "int $(solname)_get_dual_feas($(String(nameof(eval(stats_expr))))* stats_ptr, libmad_real* out)")
     _dual_feas = quote
         Base.@ccallable function $(Symbol(solname, :_get_dual_feas))(stats_ptr::Ptr{Cvoid}, out::Ptr{Cdouble})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
@@ -133,7 +133,7 @@ function generate_stats_getters(solname, stats_expr)
         end
     end
 
-    push!(function_sigs, "int $(solname)_get_status($(String(nameof(eval(stats_expr))))* stats_ptr, long* out)")
+    push!(function_sigs, "int $(solname)_get_status($(String(nameof(eval(stats_expr))))* stats_ptr, libmad_int* out)")
     _status = quote
         Base.@ccallable function $(Symbol(solname, :_get_status))(stats_ptr::Ptr{Cvoid}, out::Ptr{Clong})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
