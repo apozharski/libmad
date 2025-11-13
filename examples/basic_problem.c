@@ -23,20 +23,20 @@ int hess_structure(long* I, long* J, void* user_data)
   return 0;
 }
 
-int obj(double* x, double* f, void* user_data)
+int obj(const double* x, double* f, void* user_data)
 {
   *f = 0.5*((x[0]-2)*(x[0]-2) + (x[1]-2)*(x[1]-2));
   return 0;
 }
 
-int cons(double* x, double* c, void* user_data)
+int cons(const double* x, double* c, void* user_data)
 {
   *c = x[0] + x[1];
 
   return 0;
 }
 
-int grad(double* x, double* g, void* user_data)
+int grad(const double* x, double* g, void* user_data)
 {
   g[0] = x[0] - 2;
   g[1] = x[1] - 2;
@@ -44,7 +44,7 @@ int grad(double* x, double* g, void* user_data)
   return 0;
 }
 
-int jac_coord(double* x, double* J, void* user_data)
+int jac_coord(const double* x, double* J, void* user_data)
 {
   J[0] = 1;
   J[1] = 1;
@@ -52,7 +52,7 @@ int jac_coord(double* x, double* J, void* user_data)
   return 0;
 }
 
-int hess_coord(double obj_weight, double* x, double* y, double* H, void* user_data)
+int hess_coord(double obj_weight, const double* x, const double* y, double* H, void* user_data)
 {
   H[0] = 1;
   H[1] = 1;

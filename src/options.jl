@@ -28,222 +28,6 @@ function get_populated_subpaths!(dict::OptsDict, path::Path)
     return paths
 end
 
-function dotchain(names)
-    if isempty(names)
-        return :()
-    end
-    if length(names) == 1
-        return names[1]
-    end
-    if length(names) == 2
-        return Expr(:., names[1], QuoteNode((names[2])))
-    end
-    return Expr(:., dotchain(names[1:end-1]), QuoteNode(names[end]) )
-end
-
-function strdotchain(names)
-    return join([String(name) for name in names], ".")
-end
-
-function add_assign!(vec, parents, fname)
-    push!(vec,
-          quote
-              if unsafe_string(str) == $(strdotchain(vcat(parents, fname)))
-                  $(dotchain(vcat([:opt], parents, fname))) = val
-                  return 0
-              end
-          end
-          )
-end
-
-function add_assign_sub!(vec, parents, fname, type)
-    push!(vec,
-          quote
-              if unsafe_string(str) == $(strdotchain(vcat(parents, fname)))
-                  if typeof($(dotchain(vcat([:opt], parents, fname)))) == $(type)
-                      $(dotchain(vcat([:opt], parents, fname))) = val
-                      return 0
-                  else
-                      return 2
-                  end
-              end
-          end
-          )
-end
-
-function genoptsetters(opttype)
-    fnames = fieldnames(opttype)
-    ftypes = fieldtypes(opttype)
-    n = length(fnames)
-    f64sets = []
-    i64sets = []
-    i32sets = []
-    bsets = []
-    for ii=1:n
-        if ftypes[ii] == Cdouble
-            add_assign!(f64sets, [], fnames[ii])
-        end
-        if ftypes[ii] == Clong
-            add_assign!(i64sets, [], fnames[ii])
-        end
-        if ftypes[ii] <: Enum{Clong}
-            add_assign!(i64sets, [], fnames[ii])
-        end
-        if ftypes[ii] == Cint
-            add_assign!(i32sets, [], fnames[ii])
-        end
-        if ftypes[ii] <: Enum{Cint}
-            add_assign!(i32sets, [], fnames[ii])
-        end
-        if ftypes[ii] == Bool
-            add_assign!(bsets, [], fnames[ii])
-        end
-        if isstructtype(ftypes[ii])
-            f64_, i64_, i32_, b_ = genoptsetters(ftypes[ii], [fnames[ii]])
-            append!(f64sets, f64_)
-            append!(i64sets, i64_)
-            append!(i32sets, i32_)
-            append!(bsets, b_)
-        end
-        if isabstracttype(ftypes[ii]) && ftypes[ii] <: ABSTRACT_OPTS
-            concrete = InteractiveUtils.subtypes(ftypes[ii])
-            for stype in concrete
-                f64_, i64_, i32_, b_ = genoptsetters_sub(stype, [fnames[ii]])
-                append!(f64sets, f64_)
-                append!(i64sets, i64_)
-                append!(i32sets, i32_)
-                append!(bsets, b_)
-            end
-        end
-    end
-    
-    return quote
-        Base.@ccallable function madnlp_set_double_option(opts::Ptr{$(opttype)}, str::Cstring, val::Cdouble)::Cint
-            opt = opts[]
-            $(f64sets...)
-            return 1
-        end
-
-        Base.@ccallable function madnlp_set_long_option(opts::Ptr{$(opttype)}, str::Cstring, val::Clong)::Cint
-            opt = opts[]
-            $(i64sets...)
-            return 1
-        end
-
-        Base.@ccallable function madnlp_set_int_option(opts::Ptr{$(opttype)}, str::Cstring, val::Cint)::Cint
-            opt = opts[]
-            $(i32sets...)
-            return 1
-        end
-
-        Base.@ccallable function madnlp_set_bool_option(opts::Ptr{$(opttype)}, str::Cstring, val::Cuchar)::Cint
-            opt = opts[]
-            $(bsets...)
-            return 1
-        end
-    end
-end
-
-function genoptsetters(opttype, parents)
-    fnames = fieldnames(opttype)
-    ftypes = fieldtypes(opttype)
-    n = length(fnames)
-    f64sets = []
-    i64sets = []
-    i32sets = []
-    bsets = []
-    for ii=1:n
-        if ftypes[ii] == Cdouble
-            add_assign!(f64sets, parents, fnames[ii])
-        end
-        if ftypes[ii] == Clong
-            add_assign!(i64sets, parents, fnames[ii])
-        end
-        if ftypes[ii] <: Enum{Clong}
-            add_assign!(i64sets, parents, fnames[ii])
-        end
-        if ftypes[ii] == Cint
-            add_assign!(i32sets, parents, fnames[ii])
-        end
-        if ftypes[ii] <: Enum{Cint}
-            add_assign!(i32sets, parents, fnames[ii])
-        end
-        if ftypes[ii] == Bool
-            add_assign!(bsets, parents, fnames[ii])
-        end
-        if isstructtype(ftypes[ii])
-            f64_, i64_, i32_, b_ = genoptsetters(ftypes[ii], vcat(parents,fnames[ii]))
-            append!(f64sets, f64_)
-            append!(i64sets, i64_)
-            append!(i32sets, i32_)
-            append!(bsets, b_)
-        end
-        if isabstracttype(ftypes[ii]) && ftypes[ii] <: ABSTRACT_OPTS
-            concrete = InteractiveUtils.subtypes(ftypes[ii])
-            for stype in concrete
-                f64_, i64_, i32_, b_ = genoptsetters_sub(stype, vcat(parents,fnames[ii]))
-                append!(f64sets, f64_)
-                append!(i64sets, i64_)
-                append!(i32sets, i32_)
-                append!(bsets, b_)
-            end
-        end
-    end
-    return f64sets, i64sets, i32sets, bsets
-end
-
-function genoptsetters_sub(opttype, parents)
-    fnames = fieldnames(opttype)
-    ftypes = fieldtypes(opttype)
-    n = length(fnames)
-    f64sets = []
-    i64sets = []
-    i32sets = []
-    bsets = []
-    for ii=1:n
-        if ftypes[ii] == Cdouble
-            add_assign_sub!(f64sets, parents, fnames[ii], opttype)
-        end
-        if ftypes[ii] == Clong
-            add_assign_sub!(i64sets, parents, fnames[ii], opttype)
-        end
-        if ftypes[ii] <: Enum{Clong}
-            add_assign_sub!(i64sets, parents, fnames[ii], opttype)
-        end
-        if ftypes[ii] == Cint
-            add_assign_sub!(i32sets, parents, fnames[ii], opttype)
-        end
-        if ftypes[ii] <: Enum{Cint}
-            add_assign_sub!(i32sets, parents, fnames[ii], opttype)
-        end
-        if ftypes[ii] == Bool
-            add_assign_sub!(bsets, parents, fnames[ii], opttype)
-        end
-        if isstructtype(ftypes[ii])
-            f64_, i64_, i32_, b_ = genoptsetters(ftypes[ii], vcat(parents,fnames[ii]))
-            append!(f64sets, f64_)
-            append!(i64sets, i64_)
-            append!(i32sets, i32_)
-            append!(bsets, b_)
-        end
-        if isabstracttype(ftypes[ii]) && ftypes[ii] <: ABSTRACT_OPTS
-            concrete = InteractiveUtils.subtypes(ftypes[ii])
-            for stype in concrete
-                f64_, i64_, i32_, b_ = genoptsetters_sub(stype, vcat(parents,fnames[ii]))
-                append!(f64sets, f64_)
-                append!(i64sets, i64_)
-                append!(i32sets, i32_)
-                append!(bsets, b_)
-            end
-        end
-    end
-    return f64sets, i64sets, i32sets, bsets
-end
-
-macro options(expr)
-    esc(genoptsetters(eval(expr)))
-end
-
 macro concrete_dict(dictname, type)
     concrete_types = []
     abstract_types = Vector{Any}([eval(type)])
@@ -338,37 +122,7 @@ function get_path_info(optstype::Type)
     return valid_paths, path_guards, path_type_options
 end
 
-function generate_guards(guards, errcode)
-    if isempty(guards)
-        return :()
-    elseif length(guards) == 1
-        return :(($(generate_guard(guards[1]::Guard))) || return Cint($(errcode)))
-    else
-        return :(($(generate_guard(guards[1]::Guard))) || ($(generate_guards(guards[2:end], errcode))))
-    end
-end
-
-function generate_setter_check(path, guards, errorcode)
-    return quote
-        if path == $(path)
-            $(generate_guards(guards, errorcode))
-            opts.dict[path] = val
-            return Cint(0)
-        end
-    end
-end
-
-function generate_string_setter_check(path, guards, errorcode)
-    return quote
-        if path == $(path)
-            $(generate_guards(guards, errorcode))
-            opts.dict[path] = unsafe_string(val)[:]
-            return Cint(0)
-        end
-    end
-end
-
-function to_c_name(type::Type)
+function to_c_type(type::Type)
     if type == Int32
         return "int"
     elseif type == Int64
@@ -384,53 +138,20 @@ function to_c_name(type::Type)
     end
 end
 
-function generate_setter(opts_type, dict_type, leaf_type, valid_paths, path_guards, path_type_options)
-    leaf_name = Symbol(lowercase(String(leaf_type.name.name)))
-    opts_name = Symbol(lowercase(String(opts_type.name.name)))
-    checks = []
-
-    for (path, type) in valid_paths
-        ntype = normalize_type(type)
-        if ntype != leaf_type
-            continue
-        end
-        push!(checks, generate_setter_check(path, path_guards[path], 10))
+function to_c_name(type::Type)
+    if type == Int32
+        return "int"
+    elseif type == Int64
+        return "long"
+    elseif type == Float32
+        return "float"
+    elseif type == Float64
+        return "double"
+    elseif type == Bool
+        return "bool"
+    else
+        return "?????"
     end
-
-    setter = quote
-        Base.@ccallable function $(Symbol(opts_name,:_set_ ,leaf_name, :_option))(opts_ptr::Ptr{$(dict_type)}, name::Cstring, val::$(leaf_type))::Cint
-            opts = unsafe_pointer_to_objref(opts_ptr)
-            path = Tuple(Symbol.(split(unsafe_string(name))))
-            $(checks...)
-            return Cint(1)
-        end
-    end
-    push!(function_sigs, "int $(opts_name)_set_$(leaf_name)_option($(dict_type)* opts_ptr, const char* name, $(to_c_name(leaf_type)) val)")
-    return setter
-end
-
-function generate_string_setter(opts_type, dict_type, valid_paths, path_guards, path_type_options)
-    opts_name = Symbol(lowercase(String(opts_type.name.name)))
-    checks = []
-
-    for (path, type) in valid_paths
-        ntype = normalize_type(type)
-        if ntype != String
-            continue
-        end
-        push!(checks, generate_string_setter_check(path, path_guards[path], 10))
-    end
-
-    setter = quote
-        Base.@ccallable function $(Symbol(opts_name,:_set_string_option))(opts_ptr::Ptr{$(dict_type)}, name::Cstring, val::Cstring)::Cint
-            opts = unsafe_pointer_to_objref(opts_ptr)
-            path = Tuple(Symbol.(split(unsafe_string(name))))
-            $(checks...)
-            return Cint(1)
-        end
-    end
-    push!(function_sigs, "int $(opts_name)_set_string_option($(dict_type)* opts_ptr, const char* name, const char* val)")
-    return setter
 end
 
 # WARNING(@anton): This code contains a hack to get around not being able to splat (when using --trim)
@@ -486,9 +207,10 @@ Base.@ccallable function libmad_create_options_dict(opts_ptr_ptr::Ptr{Ptr{Cvoid}
     return Cint(0)
 end
 
-#for type in [Int32, Int64, Float32, Float64, Bool]
+# TODO(@anton) in principle we could support the rest of these types but this may needlessly complicate the interface
+# for type in [Int32, Int64, Float32, Float64, Bool]
 for type in [Int64, Float64, Bool]
-    push!(function_sigs, "int libmad_set_$(to_c_name(type))_option(OptsDict* opts_ptr, const char* name, $(to_c_name(type)) val)")
+    push!(function_sigs, "int libmad_set_$(to_c_name(type))_option(OptsDict* opts_ptr, const char* name, $(to_c_type(type)) val)")
     fname = "libmad_set_$(to_c_name(type))_option"
     @eval begin
         Base.@ccallable function $(Symbol(fname))(opts_ptr::Ptr{Cvoid}, name::Cstring, val::$(Symbol(type)))::Cint
