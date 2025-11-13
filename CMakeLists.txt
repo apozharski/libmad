@@ -79,18 +79,15 @@ get_filename_component(JULIA_PATH_PREFIX "${JULIA_BINDIR}" DIRECTORY)
 set(JULIA_INCLUDE_DIR ${JULIA_PATH_PREFIX}/include/julia)
 
 message(CHECK_START "Find juliac.jl")
-# TODO is this consistent? for now it is
-find_file(JULIAC_EXECUTABLE juliac.jl HINT ${JULIA_PATH_PREFIX}/share/julia/juliac)
+execute_process(
+      COMMAND which juliac
+      OUTPUT_VARIABLE JULIAC_EXECUTABLE
+    )
 if(NOT JULIAC_EXECUTABLE)
   message(CHECK_FAIL "juliac.jl not found")
 else()
   message(CHECK_PASS "juliac.jl found")
   message(${JULIAC_EXECUTABLE})
-  execute_process(
-      COMMAND which juliac
-      OUTPUT_VARIABLE JULIAC_APP
-    )
-  message(${JULIAC_APP})
 endif()
 
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/include")
