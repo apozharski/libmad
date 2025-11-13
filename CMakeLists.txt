@@ -80,9 +80,10 @@ set(JULIA_INCLUDE_DIR ${JULIA_PATH_PREFIX}/include/julia)
 
 message(CHECK_START "Find juliac.jl")
 execute_process(
-      COMMAND which juliac
-      OUTPUT_VARIABLE JULIAC_EXECUTABLE
-    )
+  COMMAND which juliac
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  OUTPUT_VARIABLE JULIAC_EXECUTABLE
+)
 if(NOT JULIAC_EXECUTABLE)
   message(CHECK_FAIL "juliac.jl not found")
 else()
@@ -96,7 +97,7 @@ add_custom_command(
   OUTPUT ${PROJECT_BINARY_DIR}/lib/libMad.so
   ${PROJECT_BINARY_DIR}/lib
   ${PROJECT_BINARY_DIR}/share
-  COMMAND juliac  --compile-ccallable --bundle ${PROJECT_BINARY_DIR} --experimental ${JULIAC_FLAGS} --output-lib ${PROJECT_BINARY_DIR}/libMad ${PROJECT_SOURCE_DIR}
+  COMMAND ${JULIAC_EXECUTABLE} --verbose --compile-ccallable --bundle ${PROJECT_BINARY_DIR} --experimental ${JULIAC_FLAGS} --output-lib ${PROJECT_BINARY_DIR}/libMad ${PROJECT_SOURCE_DIR}
   DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
   ${PROJECT_SOURCE_DIR}/src/utils.jl
   ${PROJECT_SOURCE_DIR}/src/options.jl
