@@ -1,7 +1,5 @@
 name: dist
-
-on: workflow_distpatch
-
+on: workflow_dispatch
 jobs:
   build:
     name: Build Linux binaries -  ${{ matrix.os }} $
@@ -12,10 +10,10 @@ jobs:
           os: [ubuntu-latest]
           julia-version: ['1']
           julia-arch: [x64]
-      steps:
-      - uses: actions/checkout@v4
-      - uses: julia-actions/install-juliaup@v2
-        with:
-          channel: ${{ matrix.julia-version }}
-      - run: julia -e 'Pkg.add("JuliaC"); Pkg.Apps.add("JuliaC")'
-      - run: mkdir build && cd build && cmake .. && make
+    steps:
+    - uses: actions/checkout@v4
+    - uses: julia-actions/install-juliaup@v2
+      with:
+        channel: ${{ matrix.julia-version }}
+    - run: julia -e 'Pkg.add("JuliaC"); Pkg.Apps.add("JuliaC")'
+    - run: mkdir build && cd build && cmake .. && make
