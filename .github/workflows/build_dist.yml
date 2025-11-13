@@ -20,6 +20,6 @@ jobs:
     - name: add JuliaC to path
       run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
     - name: dev libmad
-      run: julia -e 'using Pkg; Pkg.develop(path=".");Pkg.st()'
+      run: julia -e 'using Pkg; Pkg.develop(path=".");Pkg.status()'
     - name: 
       run: mkdir build && cd build && cmake .. && make
