@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.17)
 project(libMad C)
 include(CMakePackageConfigHelpers)
 include(CMakePrintHelpers)
+include(GNUInstallDirs)
 
 if(NOT JULIAC_FLAGS)
     set(JULIAC_FLAGS "")
@@ -79,6 +80,9 @@ if(NOT JULIAC_EXECUTABLE)
 else()
   message(CHECK_PASS "juliac.jl found")
 endif()
+
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/include")
+
 add_custom_command(
   OUTPUT ${PROJECT_BINARY_DIR}/lib/libMad.so
   ${PROJECT_BINARY_DIR}/lib
@@ -94,8 +98,8 @@ add_custom_command(
 )
 
 add_custom_command(
-  OUTPUT ${PROJECT_BINARY_DIR}/libMad.h
-  COMMAND ${JULIA_EXECUTABLE} --project=${PROJECT_SOURCE_DIR} --startup-file=no ${PROJECT_SOURCE_DIR}/scripts/generate_headers.jl ${PROJECT_BINARY_DIR}
+  OUTPUT ${PROJECT_BINARY_DIR}/include/libMad.h
+  COMMAND ${JULIA_EXECUTABLE} --project=${PROJECT_SOURCE_DIR} --startup-file=no ${PROJECT_SOURCE_DIR}/scripts/generate_headers.jl ${PROJECT_BINARY_DIR}/include
   DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
   ${PROJECT_SOURCE_DIR}/src/utils.jl
   ${PROJECT_SOURCE_DIR}/src/options.jl
@@ -109,10 +113,10 @@ add_custom_command(
 add_custom_target(
   libMad_target ALL
   DEPENDS ${PROJECT_BINARY_DIR}/lib/libMad.so
-  ${PROJECT_BINARY_DIR}/libMad.h
+  ${PROJECT_BINARY_DIR}/include/libMad.h
 )
 
-add_library(libMad SHARED IMPORTED)
+add_library(libMad SHARED IMPORTED global)
 add_dependencies(libMad libMad_target)
 
 set_target_properties(libMad
@@ -124,24 +128,23 @@ set_target_properties(libMad PROPERTIES LINKER_LANGUAGE C)
 
 
 target_include_directories(libMad INTERFACE
-  ${PROJECT_BINARY_DIR}
+  ${PROJECT_BINARY_DIR}/include
   ${JULIA_INCLUDE_DIR}
   $<INSTALL_INTERFACE:include/>
 )
 
 add_executable(basic_problem ${PROJECT_SOURCE_DIR}/examples/basic_problem.c)
 
-target_link_libraries(basic_problem libMad)
+target_link_libraries(basic_problem PRIVATE libMad)
 
 cmake_print_properties(TARGETS libMad
   PROPERTIES LINKER_LANGUAGE
   IMPORTED_IMPLIB
 )
-
 ## NOW DO INSTALL
 install(
   DIRECTORY ${PROJECT_BINARY_DIR}/lib
-  DESTINATION .
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(
   FILES
@@ -150,6 +153,8 @@ install(
     include
 )
 
+install(TARGETS ${EXECUTABLE_NAME}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 ## Export configs
 # export(TARGETS libMad
 #   FILE "${PROJECT_BINARY_DIR}/libmad-targets.cmake")
