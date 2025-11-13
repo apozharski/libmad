@@ -14,6 +14,7 @@ PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
 SolverCore = "ff4d7338-4cf1-434d-91df-b86cb86fb843"
 
 [compat]
+HSL = "0.5.1"
 HSL_jll = "4.0.4"
 InteractiveUtils = "1.11.0"
 MadNLP = "0.8.12"
