@@ -17,5 +17,7 @@ jobs:
         channel: ${{ matrix.julia-version }}
     - name: install JuliaC
       run: julia -e 'using Pkg; Pkg.add("JuliaC"); Pkg.Apps.add("JuliaC")'
+    - name: add JuliaC to path
       run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
-    - run: mkdir build && cd build && cmake .. && make
+    - name: build
+      run: mkdir build && cd build && cmake .. && make
