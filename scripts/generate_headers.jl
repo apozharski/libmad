@@ -2,7 +2,6 @@ using libMad
 # TODO(@anton) make this safer
 
 outpath = ARGS[1]
-
 open(joinpath(outpath,"libMad.h"), "w") do header
     #println(header,"#include \"julia.h\"")
     # add Guard

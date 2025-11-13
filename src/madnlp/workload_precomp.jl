@@ -139,7 +139,9 @@ end
     uvar = Vector{Cdouble}([Inf, Inf])
     lcon = Vector{Cdouble}([0.0])
     ucon = Vector{Cdouble}([0.0])
-    for ls in keys(LS_DICT)
+    # until we figure out a workaround for CUDA/HSL
+    # We only precompile the basic solvers.
+    for ls in ["CHOLMODSolver", "LapackCPUSolver", "LDLSolver", "MumpsSolver", "UmfpackSolver"]
         for kkt in keys(KKT_DICT)
             GC.@preserve x0 lvar uvar lcon ucon begin
                 @compile_workload begin

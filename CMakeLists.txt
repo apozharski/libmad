@@ -8,6 +8,12 @@ if(NOT JULIAC_FLAGS)
     set(JULIAC_FLAGS "")
 endif()
 
+# Set JULIA_HSL_LIBRARY_PATH.
+# TODO(@anton) Make this make sense for mac/windows?
+# TODO(@anton) There might be a better way of doing this.
+#              Currently HSL.jl loads this at compile time
+SET(ENV{JULIA_HSL_LIBRARY_PATH} ".")
+
 message(CHECK_START "Check Juliaup Executable")
 set(JULIAUP_EXECUTABLE "juliaup" CACHE STRING "Juliaup executable default")
 if (JULIAUP_EXECUTABLE STREQUAL "julia")
