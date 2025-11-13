@@ -85,6 +85,12 @@ if(NOT JULIAC_EXECUTABLE)
   message(CHECK_FAIL "juliac.jl not found")
 else()
   message(CHECK_PASS "juliac.jl found")
+  message(${JULIAC_EXECUTABLE})
+  execute_process(
+      COMMAND which juliac
+      OUTPUT_VARIABLE JULIAC_APP
+    )
+  message(${JULIAC_APP})
 endif()
 
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/include")
