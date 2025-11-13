@@ -15,5 +15,5 @@ jobs:
     - uses: julia-actions/install-juliaup@v2
       with:
         channel: ${{ matrix.julia-version }}
-    - run: julia -e 'Pkg.add("JuliaC"); Pkg.Apps.add("JuliaC")'
+    - run: julia -e 'using Pkg; Pkg.add("JuliaC"); Pkg.Apps.add("JuliaC")'
     - run: mkdir build && cd build && cmake .. && make
