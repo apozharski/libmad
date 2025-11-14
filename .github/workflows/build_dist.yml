@@ -23,7 +23,7 @@ jobs:
       run: mkdir build && cd build && cmake .. && make
     - uses: actions/upload-artifact@v4
       with:
-        name: libMad-${{ matrix-os }}
+        name: libMad-${{ matrix.os }}
         path: |
           build/lib
           build/share
