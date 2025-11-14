@@ -16,7 +16,7 @@ jobs:
         channel: ${{ matrix.julia-version }}
     # Get a patched version of JuliaC
     - name: install JuliaC
-      run: julia -e 'using Pkg; Pkg.add("git@github.com:apozharski/JuliaC.jl.git"); Pkg.Apps.add("git@github.com:apozharski/JuliaC.jl.git")'
+      run: julia -e 'using Pkg; Pkg.add(url="git@github.com:apozharski/JuliaC.jl.git"); Pkg.Apps.add(url="git@github.com:apozharski/JuliaC.jl.git")'
     - name: add JuliaC to path
       run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
     - name:
