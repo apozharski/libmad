@@ -9,17 +9,23 @@ jobs:
       matrix:
           os: [ubuntu-latest]
           julia-version: ['1']
-          julia-arch: [x64]
     steps:
     - uses: actions/checkout@v4
     - uses: julia-actions/install-juliaup@v2
       with:
         channel: ${{ matrix.julia-version }}
+    # Get a patched version of JuliaC
     - name: install JuliaC
-      run: julia -e 'using Pkg; Pkg.add("JuliaC"); Pkg.Apps.add("JuliaC")'
+      run: julia -e 'using Pkg; Pkg.add("git@github.com:apozharski/JuliaC.jl.git"); Pkg.Apps.add("git@github.com:apozharski/JuliaC.jl.git")'
     - name: add JuliaC to path
       run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
-    - name: dev libmad
-      run: julia -e 'using Pkg; Pkg.develop(path=".");Pkg.status()'
-    - name: 
+    - name:
       run: mkdir build && cd build && cmake .. && make
+    - uses: actions/upload-artifact@v4
+      with:
+        name: libMad-${{ matrix-os }}
+        path: |
+          build/lib
+          build/share
+          build/include
+          build/basic_problem
