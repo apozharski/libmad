@@ -19,13 +19,11 @@ jobs:
       run: julia -e 'using Pkg; Pkg.add(url="https://github.com/apozharski/JuliaC.jl.git"); Pkg.Apps.add(url="https://github.com/apozharski/JuliaC.jl.git")'
     - name: add JuliaC to path
       run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
-    - name:
+    - name: build libMad
       run: mkdir build && cd build && cmake .. && make
+    - name: tar output
+      run: tar -czf libMad-${{ matrix.os }}.tar.gz build/lib/ build/share/ build/include/ build/basic_problem
     - uses: actions/upload-artifact@v4
       with:
         name: libMad-${{ matrix.os }}
-        path: |
-          build/lib
-          build/share
-          build/include
-          build/basic_problem
+        path: libMad-${{ matrix.os }}.tar.gz
