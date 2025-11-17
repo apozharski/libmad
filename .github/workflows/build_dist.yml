@@ -41,7 +41,7 @@ jobs:
     - name: install JuliaC
       run: julia -e 'using Pkg; Pkg.add(url="https://github.com/apozharski/JuliaC.jl.git"); Pkg.Apps.add(url="https://github.com/apozharski/JuliaC.jl.git")'
     - name: add JuliaC to path
-      run: echo "PATH=$HOME/.julia/bin;$env:PATH" >> $env:GITHUB_ENV
+      run: echo "PATH=$HOME\.julia\bin;$env:PATH" >> $env:GITHUB_ENV
       shell: pwsh
     - name: build libMad
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && make install
