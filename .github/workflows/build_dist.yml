@@ -19,9 +19,9 @@ jobs:
     - name: add JuliaC to path
       run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
     - name: build libMad
-      run: mkdir build && cd build && cmake .. && make
+      run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && make install
     - name: tar output
-      run: tar -czf libMad-ubuntu-latest.tar.gz build/lib/ build/share/ build/include/ build/basic_problem
+      run: tar -czf libMad-ubuntu-latest.tar.gz build/install/*
     - uses: actions/upload-artifact@v4
       with:
         name: libMad-ubuntu-latest
@@ -44,4 +44,4 @@ jobs:
       run: echo "PATH=${{ github.workspace }}\octave-7.3.0-w64\mingw64\bin;$env:PATH" >> $env:GITHUB_ENV
       shell: pwsh
     - name: build libMad
-      run: mkdir build && cd build && cmake .. && make
+      run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && make install

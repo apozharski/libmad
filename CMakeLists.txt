@@ -154,16 +154,20 @@ cmake_print_properties(TARGETS libMad
 ## NOW DO INSTALL
 install(
   DIRECTORY ${PROJECT_BINARY_DIR}/lib
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  DESTINATION "."
 )
 install(
   FILES
-    ${PROJECT_BINARY_DIR}/libMad.h
+    ${PROJECT_BINARY_DIR}/include/libMad.h
   DESTINATION
     include
 )
+install(
+  DIRECTORY ${PROJECT_BINARY_DIR}/share
+  DESTINATION "."
+)
 
-install(TARGETS ${EXECUTABLE_NAME}
+install(TARGETS basic_problem
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 ## Export configs
 # export(TARGETS libMad
