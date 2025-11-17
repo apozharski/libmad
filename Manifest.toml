@@ -69,7 +69,7 @@ version = "0.5.2"
 
 [[deps.HSL_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
-path = "/home/anton/.julia/dev/HSL_jll"
+git-tree-sha1 = "4b34f6e368aa509b244847e6b0c9b370791bab09"
 uuid = "017b0a0e-03f4-516a-9b91-836bbd1904dd"
 version = "4.0.4+0"
 
@@ -80,7 +80,7 @@ version = "1.11.0"
 
 [[deps.JLLWrappers]]
 deps = ["Artifacts", "Preferences"]
-path = "/home/anton/.julia/dev/JLLWrappers"
+git-tree-sha1 = "0533e564aae234aff59ab625543145446d8b6ec2"
 uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
 version = "1.7.1"
 
@@ -155,23 +155,9 @@ version = "2.11.0"
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 version = "1.11.0"
 
-[[deps.METIS_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "2eefa8baa858871ae7770c98c3c2a7e46daba5b4"
-uuid = "d00139f3-1899-568f-a2f0-47f597d42d70"
-version = "5.1.3+0"
-
-[[deps.MUMPS_seq_jll]]
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "METIS_jll", "libblastrampoline_jll"]
-git-tree-sha1 = "fc0c8442887b48c15aec2b1787a5fc812a99b2fd"
-uuid = "d7ed1dd3-d0ae-5e8e-bfb4-87a502085b8d"
-version = "500.800.100+0"
-
 [[deps.MadNLP]]
-deps = ["LDLFactorizations", "LinearAlgebra", "Logging", "MUMPS_seq_jll", "NLPModels", "OpenBLAS32_jll", "Pkg", "PrecompileTools", "Printf", "SolverCore", "SparseArrays", "SuiteSparse"]
-git-tree-sha1 = "74c4b060c6f58f05de859316e4cb781ed3eecacd"
-repo-rev = "master"
-repo-url = "https://github.com/MadNLP/MadNLP.jl.git"
+deps = ["LDLFactorizations", "LinearAlgebra", "Logging", "NLPModels", "Pkg", "Printf", "SolverCore", "SparseArrays", "SuiteSparse"]
+git-tree-sha1 = "6d4d80f692d35e073d6e5796ebb0a8a07963d781"
 uuid = "2621e9c9-9eb4-46b1-8089-e8c72242dfb6"
 version = "0.8.12"
 
