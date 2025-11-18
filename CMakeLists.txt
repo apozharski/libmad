@@ -5,14 +5,15 @@ include(CMakePrintHelpers)
 include(GNUInstallDirs)
 
 if(NOT JULIAC_FLAGS)
-    set(JULIAC_FLAGS "")
+  set(JULIAC_FLAGS "")
 endif()
+option(WITH_EXAMPLE "Build basic example" ON)
 
 # Set JULIA_HSL_LIBRARY_PATH.
 # TODO(@anton) Make this make sense for mac/windows?
 # TODO(@anton) There might be a better way of doing this.
 #              Currently HSL.jl loads this at compile time
-SET(ENV{JULIA_HSL_LIBRARY_PATH} ".")
+#SET(ENV{JULIA_HSL_LIBRARY_PATH} ".")
 
 message(CHECK_START "Check Juliaup Executable")
 set(JULIAUP_EXECUTABLE "juliaup" CACHE STRING "Juliaup executable default")
@@ -79,11 +80,19 @@ get_filename_component(JULIA_PATH_PREFIX "${JULIA_BINDIR}" DIRECTORY)
 set(JULIA_INCLUDE_DIR ${JULIA_PATH_PREFIX}/include/julia)
 
 message(CHECK_START "Find juliac.jl")
-execute_process(
-  COMMAND which juliac
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  OUTPUT_VARIABLE JULIAC_EXECUTABLE
-)
+if(WIN32)
+  execute_process(
+    COMMAND which juliac
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE JULIAC_EXECUTABLE
+  )
+elseif(LINUX)
+  execute_process(
+    COMMAND where.exe juliac
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE JULIAC_EXECUTABLE
+  )
+endif()
 if(NOT JULIAC_EXECUTABLE)
   message(CHECK_FAIL "juliac.jl not found")
 else()
@@ -143,9 +152,11 @@ target_include_directories(libMad INTERFACE
   $<INSTALL_INTERFACE:include/>
 )
 
-add_executable(basic_problem ${PROJECT_SOURCE_DIR}/examples/basic_problem.c)
+if(WITH_EXAMPLE)
+  add_executable(basic_problem ${PROJECT_SOURCE_DIR}/examples/basic_problem.c)
 
-target_link_libraries(basic_problem PRIVATE libMad)
+  target_link_libraries(basic_problem PRIVATE libMad)
+endif()
 
 cmake_print_properties(TARGETS libMad
   PROPERTIES LINKER_LANGUAGE
@@ -167,8 +178,10 @@ install(
   DESTINATION "."
 )
 
-install(TARGETS basic_problem
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+if(WITH_EXAMPLE)
+  install(TARGETS basic_problem
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
 ## Export configs
 # export(TARGETS libMad
 #   FILE "${PROJECT_BINARY_DIR}/libmad-targets.cmake")
