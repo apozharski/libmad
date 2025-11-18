@@ -155,7 +155,7 @@ end
                                                       c_eval_f, c_eval_g,
                                                       c_eval_grad_f, c_eval_jac_g,
                                                       c_eval_h,
-                                                      C_NULL
+                                                      Ptr{Cvoid}(C_NULL)
                                                       )
                         nlp_ptr = nlp_ptr_vec[1]
                         libMad.libmad_nlpmodel_set_numerics(nlp_ptr,
@@ -177,7 +177,6 @@ end
                         _hessian_constant = "hessian_constant"
                         libMad.libmad_set_double_option(opts_ptr, unsafe_convert(Cstring,_tol), Cdouble(1e-6))
                         libMad.libmad_set_long_option(opts_ptr, unsafe_convert(Cstring,_max_iter), 2000)
-                        #libmad_set_int64_option(opts_ptr, unsafe_convert(Cstring,_print_level), 1)
                         libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_callback), unsafe_convert(Cstring,_SparseCallback))
                         libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_linear_solver), unsafe_convert(Cstring,ls))
                         libMad.libmad_set_bool_option(opts_ptr, unsafe_convert(Cstring,_hessian_constant), false)

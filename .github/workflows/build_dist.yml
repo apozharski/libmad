@@ -36,10 +36,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Configure to use mingw
-      shell: cmake -P {0}
       run: |
-        set(ENV{CC} "gcc")
-        set(ENV{CXX} "g++")
+        echo "CC=gcc" >> $GITHUB_ENV
+        echo "CXX=g++" >> $GITHUB_ENV
     - uses: julia-actions/install-juliaup@v2
       with:
         channel: ${{ matrix.julia-version }}
@@ -50,3 +49,5 @@ jobs:
       shell: pwsh
     - name: build libMad
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL
+    - name: debug print
+      run: dir /s
