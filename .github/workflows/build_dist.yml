@@ -35,6 +35,11 @@ jobs:
         julia-version: ['1']
     steps:
     - uses: actions/checkout@v4
+    - name: Configure to use mingw
+      shell: cmake -P {0}
+      run: |
+        set(ENV{CC} "gcc")
+        set(ENV{CXX} "g++")
     - uses: julia-actions/install-juliaup@v2
       with:
         channel: ${{ matrix.julia-version }}
