@@ -24,7 +24,7 @@ open(joinpath(outpath,"libMad.h"), "w") do header
     println(header,"#include <stdint.h>")
     println(header)
     println(header, """
-    #define libmad_int int64_t
+    #define libmad_int long long int
     #define libmad_real double
 
     // function pointer types
