@@ -44,4 +44,4 @@ jobs:
       run: echo "PATH=$HOME\.julia\bin;$env:PATH" >> $env:GITHUB_ENV
       shell: pwsh
     - name: build libMad
-      run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && make all
+      run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL
