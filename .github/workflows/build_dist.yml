@@ -51,4 +51,4 @@ jobs:
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL
     - name: debug print
       if: always()
-      run: dir /s
+      run: Get-ChildItem -Recurse "."
