@@ -21,7 +21,7 @@ jobs:
     - name: build libMad
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && make install
     - name: tar output
-      run: tar -czf libMad-ubuntu-latest.tar.gz build/install/*
+      run: cd build/install && tar -czf ../../libMad-ubuntu-latest.tar.gz *
     - uses: actions/upload-artifact@v4
       with:
         name: libMad-ubuntu-latest
