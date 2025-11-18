@@ -1,6 +1,7 @@
-println(Base.active_project())
+#println(Base.active_project())
 using Pkg
-println(Pkg.status())
+#println(Pkg.status())
+Pkg.instantiate()
 using libMad
 # TODO(@anton) make this safer
 
