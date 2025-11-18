@@ -31,12 +31,21 @@ message(CHECK_PASS "Check Juliaup Executable")
 message(CHECK_START "Check Julia Executable")
 set(JULIA_EXECUTABLE "julia" CACHE STRING "Julia exectuable default")
 if (JULIA_EXECUTABLE STREQUAL "julia")
-  execute_process(
-    COMMAND which julia
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    OUTPUT_VARIABLE JULIA_EXECUTABLE_PARSED
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+  if(LINUX)
+    execute_process(
+      COMMAND which julia
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      OUTPUT_VARIABLE JULIA_EXECUTABLE_PARSED
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+  elseif(WIN32)
+    execute_process(
+      COMMAND where.exe julia
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      OUTPUT_VARIABLE JULIA_EXECUTABLE_PARSED
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+  endif()
   set(JULIA_EXECUTABLE ${JULIA_EXECUTABLE_PARSED} CACHE STRING "Julia executable" FORCE)
 endif()
 message(CHECK_PASS "Check Julia Executable")
@@ -80,13 +89,13 @@ get_filename_component(JULIA_PATH_PREFIX "${JULIA_BINDIR}" DIRECTORY)
 set(JULIA_INCLUDE_DIR ${JULIA_PATH_PREFIX}/include/julia)
 
 message(CHECK_START "Find juliac.jl")
-if(WIN32)
+if(LINUX)
   execute_process(
     COMMAND which juliac
     OUTPUT_STRIP_TRAILING_WHITESPACE
     OUTPUT_VARIABLE JULIAC_EXECUTABLE
   )
-elseif(LINUX)
+elseif(WIN32)
   execute_process(
     COMMAND where.exe juliac
     OUTPUT_STRIP_TRAILING_WHITESPACE
