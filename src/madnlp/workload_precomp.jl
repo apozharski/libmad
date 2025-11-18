@@ -204,7 +204,9 @@ end
 
                         libMad.madnlp_delete_solver(solver_ptr)
                     catch e
-                        display(e)
+                        Base.printstyled("ERROR: "; color=:red, bold=true)
+                        Base.showerror(stdout, e)
+                        Base.show_backtrace(stdout, Base.catch_backtrace())
                         println("$((ls, kkt)) failed")
                     finally
                     end
