@@ -1,4 +1,6 @@
 println(Base.active_project())
+using Pkg
+println(Pkg.status())
 using libMad
 # TODO(@anton) make this safer
 
