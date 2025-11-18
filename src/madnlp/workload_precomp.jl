@@ -176,7 +176,7 @@ end
                         _SparseCallback = "SparseCallback"
                         _hessian_constant = "hessian_constant"
                         libMad.libmad_set_double_option(opts_ptr, unsafe_convert(Cstring,_tol), Cdouble(1e-6))
-                        libMad.libmad_set_long_option(opts_ptr, unsafe_convert(Cstring,_max_iter), 2000)
+                        libMad.libmad_set_int64_option(opts_ptr, unsafe_convert(Cstring,_max_iter), 2000)
                         libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_callback), unsafe_convert(Cstring,_SparseCallback))
                         libMad.libmad_set_string_option(opts_ptr, unsafe_convert(Cstring,_linear_solver), unsafe_convert(Cstring,ls))
                         libMad.libmad_set_bool_option(opts_ptr, unsafe_convert(Cstring,_hessian_constant), false)
