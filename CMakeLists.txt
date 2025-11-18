@@ -45,6 +45,7 @@ if (JULIA_EXECUTABLE STREQUAL "julia")
       OUTPUT_VARIABLE JULIA_EXECUTABLE_PARSED
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
+    string(REGEX MATCH "(.*)\n" JULIA_EXECUTABLE_PARSED ${JULIA_EXECUTABLE_PARSED})
     message("Julia executable: ${JULIA_EXECUTABLE_PARSED}")
   endif()
   set(JULIA_EXECUTABLE ${JULIA_EXECUTABLE_PARSED} CACHE STRING "Julia executable" FORCE)
@@ -74,8 +75,6 @@ if(JULIA_VERSION VERSION_LESS "1.12.0-rc1")
 else()
   message(CHECK_PASS "Compatible julia version: ${JULIA_VERSION}")
 endif()
-
-message("${JULIA_EXECUTABLE}")
 # detect Julia binary dir
 if(NOT DEFINED JULIA_BINDIR)
     # The executable could be a chocolatey shim, so run some Julia code to report
