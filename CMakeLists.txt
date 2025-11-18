@@ -59,9 +59,11 @@ if(NOT DEFINED JULIA_VERSION)
     COMMAND ${JULIA_EXECUTABLE} --startup-file=no --version
     OUTPUT_STRIP_TRAILING_WHITESPACE
     OUTPUT_VARIABLE JULIA_VERSION_FULL
+    ERROR_VARIABLE JULIA_VERSION_ERROR
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   )
   message("Raw Julia version: ${JULIA_VERSION_FULL}")
+  message("Julia version error: ${JULIA_VERSION_ERROR}")
   string(
     REGEX REPLACE
     "^julia version (.*)"
