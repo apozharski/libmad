@@ -142,7 +142,7 @@ function to_c_name(type::Type)
     if type == Int32
         return "int"
     elseif type == Int64
-        return "long"
+        return "long long"
     elseif type == Float32
         return "float"
     elseif type == Float64
