@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int jac_structure(long* I, long* J, void* user_data)
+int jac_structure(long long* I, long long* J, void* user_data)
 {
   I[0] = 1;
   I[1] = 1;
@@ -13,7 +13,7 @@ int jac_structure(long* I, long* J, void* user_data)
   return 0;
 }
 
-int hess_structure(long* I, long* J, void* user_data)
+int hess_structure(long long* I, long long* J, void* user_data)
 {
   I[0] = 1;
   I[1] = 2;

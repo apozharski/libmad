@@ -108,7 +108,7 @@ function generate_stats_getters(solname, stats_expr)
 
     push!(function_sigs, "int $(solname)_get_iters($(String(nameof(eval(stats_expr))))* stats_ptr, libmad_int* out)")
     _iters = quote
-        Base.@ccallable function $(Symbol(solname, :_get_iters))(stats_ptr::Ptr{Cvoid}, out::Ptr{Clong})::Cint
+        Base.@ccallable function $(Symbol(solname, :_get_iters))(stats_ptr::Ptr{Cvoid}, out::Ptr{Clonglong})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
             unsafe_store!(out, iters(stats))
             return Cint(0)
@@ -135,7 +135,7 @@ function generate_stats_getters(solname, stats_expr)
 
     push!(function_sigs, "int $(solname)_get_status($(String(nameof(eval(stats_expr))))* stats_ptr, libmad_int* out)")
     _status = quote
-        Base.@ccallable function $(Symbol(solname, :_get_status))(stats_ptr::Ptr{Cvoid}, out::Ptr{Clong})::Cint
+        Base.@ccallable function $(Symbol(solname, :_get_status))(stats_ptr::Ptr{Cvoid}, out::Ptr{Clonglong})::Cint
             stats = wrap_obj($(stats_expr),stats_ptr)
             unsafe_store!(out, status(stats))
             return Cint(0)

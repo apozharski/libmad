@@ -51,14 +51,14 @@ function _eval_h!(w::Vector{T},l::Vector{T}, h::Vector{T}) where T
     h[3] = (2*b)
 end
 
-function jac_struct(I::Ptr{Clong}, J::Ptr{Clong}, d::Ptr{Cvoid})::Cint
+function jac_struct(I::Ptr{Clonglong}, J::Ptr{Clonglong}, d::Ptr{Cvoid})::Cint
     I_::Vector{Int64} = unsafe_wrap(Array, I, 2)
     J_::Vector{Int64} = unsafe_wrap(Array, J, 2)
     _jac_struct(I_, J_)
     return Cint(0)
 end
 
-function hess_struct(I::Ptr{Clong}, J::Ptr{Clong}, d::Ptr{Cvoid})::Cint
+function hess_struct(I::Ptr{Clonglong}, J::Ptr{Clonglong}, d::Ptr{Cvoid})::Cint
     I_::Vector{Int64} = unsafe_wrap(Array, I, 3)
     J_::Vector{Int64} = unsafe_wrap(Array, J, 3)
     _hess_struct(I_, J_)
@@ -102,8 +102,8 @@ function eval_h(obj_scale::Cdouble, Cw::Ptr{Cdouble}, Cl::Ptr{Cdouble}, Chess::P
 end
 
 @setup_workload begin
-    c_jac_struct = @cfunction(jac_struct, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}))
-    c_hess_struct = @cfunction(hess_struct, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}))
+    c_jac_struct = @cfunction(jac_struct, Cint, (Ptr{Clonglong}, Ptr{Clonglong}, Ptr{Cvoid}))
+    c_hess_struct = @cfunction(hess_struct, Cint, (Ptr{Clonglong}, Ptr{Clonglong}, Ptr{Cvoid}))
     c_eval_f = @cfunction(eval_f, Cint, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}))
     c_eval_g = @cfunction(eval_g, Cint, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}))
     c_eval_grad_f = @cfunction(eval_grad_f, Cint, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}))

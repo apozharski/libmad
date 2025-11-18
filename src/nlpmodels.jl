@@ -26,8 +26,8 @@ push!(function_sigs, """int libmad_nlpmodel_create(CNLPModel** nlp_ptr_ptr,
 
 Base.@ccallable function libmad_nlpmodel_create(nlp_ptr_ptr::Ptr{Ptr{Cvoid}},
                                                 name::Cstring,
-                                                nvar::Clong, ncon::Clong,
-                                                nnzj::Clong, nnzh::Clong,
+                                                nvar::Clonglong, ncon::Clonglong,
+                                                nnzj::Clonglong, nnzh::Clonglong,
                                                 jac_struct::Ptr{Cvoid}, hess_struct::Ptr{Cvoid},
                                                 eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                 eval_grad_f::Ptr{Cvoid}, eval_jac_g::Ptr{Cvoid},
@@ -96,9 +96,9 @@ Base.@ccallable function libmad_nlpmodel_set_numerics(nlp_ptr::Ptr{Cvoid},
 end
 
 function NLPModels.jac_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::AbstractVector{T}) where T
-    I_ = Base.unsafe_convert(Ptr{Clong}, I)
-    J_ = Base.unsafe_convert(Ptr{Clong}, J)
-    ret = ccall(nlp.jac_struct, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}), I_, J_, nlp.user_data)
+    I_ = Base.unsafe_convert(Ptr{Clonglong}, I)
+    J_ = Base.unsafe_convert(Ptr{Clonglong}, J)
+    ret = ccall(nlp.jac_struct, Cint, (Ptr{Clonglong}, Ptr{Clonglong}, Ptr{Cvoid}), I_, J_, nlp.user_data)
     if ret != Cint(0)
         throw(Exception("CallbackError jac_struct"))
     end
@@ -106,9 +106,9 @@ function NLPModels.jac_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::Abstr
 end
 
 function NLPModels.hess_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::AbstractVector{T}) where T
-    I_ = Base.unsafe_convert(Ptr{Clong}, I)
-    J_ = Base.unsafe_convert(Ptr{Clong}, J)
-    ret = ccall(nlp.hess_struct, Cint, (Ptr{Clong}, Ptr{Clong}, Ptr{Cvoid}), I_, J_, nlp.user_data)
+    I_ = Base.unsafe_convert(Ptr{Clonglong}, I)
+    J_ = Base.unsafe_convert(Ptr{Clonglong}, J)
+    ret = ccall(nlp.hess_struct, Cint, (Ptr{Clonglong}, Ptr{Clonglong}, Ptr{Cvoid}), I_, J_, nlp.user_data)
     if ret != Cint(0)
         throw(Exception("CallbackError hess_struct"))
     end
