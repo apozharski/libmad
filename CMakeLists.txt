@@ -41,7 +41,6 @@ if (JULIA_EXECUTABLE STREQUAL "julia")
   elseif(WIN32)
     execute_process(
       COMMAND where.exe julia
-      COMMAND_ECHO STDOUT
       OUTPUT_STRIP_TRAILING_WHITESPACE
       OUTPUT_VARIABLE JULIA_EXECUTABLE_PARSED
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -116,12 +115,14 @@ endif()
 
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/include")
 
-add_custom_command(
-  OUTPUT ${PROJECT_BINARY_DIR}/lib/libMad.so
-  ${PROJECT_BINARY_DIR}/lib
-  ${PROJECT_BINARY_DIR}/share
-  COMMAND ${JULIAC_EXECUTABLE} --verbose --compile-ccallable --bundle ${PROJECT_BINARY_DIR} --experimental ${JULIAC_FLAGS} --output-lib ${PROJECT_BINARY_DIR}/libMad ${PROJECT_SOURCE_DIR}
-  DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
+# SETUP VARIABLES BECAUSE WINDOWS IS HORRIBLE:
+set(LIBMAD_SHARED_LIBRARY ${PROJECT_BINARY_DIR}/lib/libMad.so)
+set(LIBMAD_HEADER ${PROJECT_BINARY_DIR}/include/libMad.h)
+set(LIBMAD_SHARED_LIBRARY_PATH ${PROJECT_BINARY_DIR}/lib)
+set(LIBMAD_HEADER_PATH ${PROJECT_BINARY_DIR}/include)
+set(LIBMAD_BUNDLE_PATH ${PROJECT_BINARY_DIR}/share)
+set(LIBMAD_SHARED_LIBRARY_DEPENDENCIES
+  ${PROJECT_SOURCE_DIR}/src/libMad.jl
   ${PROJECT_SOURCE_DIR}/src/utils.jl
   ${PROJECT_SOURCE_DIR}/src/options.jl
   ${PROJECT_SOURCE_DIR}/src/solver.jl
@@ -129,11 +130,10 @@ add_custom_command(
   ${PROJECT_SOURCE_DIR}/src/madnlp.jl
   ${PROJECT_SOURCE_DIR}/src/nlpmodels.jl
 )
+set(LIBMAD_GENERATE_HEADERS_SCRIPT ${PROJECT_SOURCE_DIR}/scripts/generate_headers.jl)
 
-add_custom_command(
-  OUTPUT ${PROJECT_BINARY_DIR}/include/libMad.h
-  COMMAND ${JULIA_EXECUTABLE} --project=${PROJECT_SOURCE_DIR} --startup-file=no ${PROJECT_SOURCE_DIR}/scripts/generate_headers.jl ${PROJECT_BINARY_DIR}/include
-  DEPENDS ${PROJECT_SOURCE_DIR}/src/libMad.jl
+set(LIBMAD_HEADER_DEPENDENCIES
+  ${PROJECT_SOURCE_DIR}/src/libMad.jl
   ${PROJECT_SOURCE_DIR}/src/utils.jl
   ${PROJECT_SOURCE_DIR}/src/options.jl
   ${PROJECT_SOURCE_DIR}/src/solver.jl
@@ -143,10 +143,36 @@ add_custom_command(
   ${PROJECT_SOURCE_DIR}/scripts/generate_headers.jl
 )
 
+cmake_path(NATIVE_PATH LIBMAD_SHARED_LIBRARY LIBMAD_SHARED_LIBRARY)
+cmake_path(NATIVE_PATH LIBMAD_HEADER LIBMAD_HEADER)
+cmake_path(NATIVE_PATH LIBMAD_GENERATE_HEADERS_SCRIPT LIBMAD_GENERATE_HEADERS_SCRIPT)
+cmake_path(NATIVE_PATH LIBMAD_SHARED_LIBRARY_PATH LIBMAD_SHARED_LIBRARY_PATH)
+cmake_path(NATIVE_PATH LIBMAD_HEADER_PATH LIBMAD_HEADER_PATH)
+cmake_path(NATIVE_PATH LIBMAD_BUNDLE_PATH LIBMAD_BUNDLE_PATH)
+cmake_path(NATIVE_PATH LIBMAD_SHARED_LIBRARY_DEPENDENCIES LIBMAD_SHARED_LIBRARY_DEPENDENCIES)
+cmake_path(NATIVE_PATH LIBMAD_HEADER_DEPENDENCIES LIBMAD_HEADER_DEPENDENCIES)
+message("${LIBMAD_HEADER_DEPENDENCIES}")
+message("${LIBMAD_SHARE_DLIBRARY_DEPENDENCIES}")
+
+# SETUP THE BUILD
+add_custom_command(
+  OUTPUT ${LIBMAD_SHARED_LIBRARY}
+  ${LIBMAD_SHARED_LIBRARY_PATH}
+  ${LIBMAD_BUNDLE_PATH}
+  COMMAND ${JULIAC_EXECUTABLE} --verbose --compile-ccallable --bundle ${PROJECT_BINARY_DIR} --experimental ${JULIAC_FLAGS} --output-lib libMad ${PROJECT_SOURCE_DIR}
+  DEPENDS ${LIBMAD_SHARED_LIBRARY_DEPENDENCIES}
+)
+
+add_custom_command(
+  OUTPUT ${LIBMAD_HEADER}
+  COMMAND ${JULIA_EXECUTABLE} --project=${PROJECT_SOURCE_DIR} --startup-file=no ${LIBMAD_GENERATE_HEADERS_SCRIPT} ${LIBMAD_HEADER_PATH}
+  DEPENDS ${LIBMAD_HEADER_DEPENDENCIES}
+)
+
 add_custom_target(
   libMad_target ALL
-  DEPENDS ${PROJECT_BINARY_DIR}/lib/libMad.so
-  ${PROJECT_BINARY_DIR}/include/libMad.h
+  DEPENDS ${LIBMAD_SHARED_LIBRARY}
+  ${LIBMAD_HEADER}
 )
 
 add_library(libMad SHARED IMPORTED global)
@@ -154,20 +180,21 @@ add_dependencies(libMad libMad_target)
 
 set_target_properties(libMad
   PROPERTIES
-  IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/lib/libMad.so
-  IMPORTED_IMPLIB ${PROJECT_BINARY_DIR}/lib/libMad.so
+  IMPORTED_LOCATION ${LIBMAD_SHARED_LIBRARY}
+  IMPORTED_IMPLIB ${LIBMAD_SHARED_LIBRARY}
+  IMPORTED_SONAME libMad
 )
 set_target_properties(libMad PROPERTIES LINKER_LANGUAGE C)
 
 
 target_include_directories(libMad INTERFACE
-  ${PROJECT_BINARY_DIR}/include
+  ${LIBMAD_HEADER_PATH}
   ${JULIA_INCLUDE_DIR}
-  $<INSTALL_INTERFACE:include/>
+  $<INSTALL_INTERFACE:include>
 )
 
 if(WITH_EXAMPLE)
-  add_executable(basic_problem ${PROJECT_SOURCE_DIR}/examples/basic_problem.c)
+  add_executable(basic_problem $<SHELL_PATH:${PROJECT_SOURCE_DIR}/examples/basic_problem.c>)
 
   target_link_libraries(basic_problem PRIVATE libMad)
 endif()
@@ -178,17 +205,17 @@ cmake_print_properties(TARGETS libMad
 )
 ## NOW DO INSTALL
 install(
-  DIRECTORY ${PROJECT_BINARY_DIR}/lib
+  DIRECTORY ${LIBMAD_SHARED_LIBRARY_PATH}
   DESTINATION "."
 )
 install(
   FILES
-    ${PROJECT_BINARY_DIR}/include/libMad.h
+    ${LIBMAD_HEADER}
   DESTINATION
     include
 )
 install(
-  DIRECTORY ${PROJECT_BINARY_DIR}/share
+  DIRECTORY ${LIBMAD_BUNDLE_PATH}
   DESTINATION "."
 )
 
