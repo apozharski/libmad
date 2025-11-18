@@ -1,3 +1,4 @@
+println(Base.active_project())
 using libMad
 # TODO(@anton) make this safer
 
