@@ -57,7 +57,8 @@ message(CHECK_PASS "Check Julia Executable")
 message(CHECK_START "Check julia version")
 if(NOT DEFINED JULIA_VERSION)
   execute_process(
-    COMMAND ${JULIA_EXECUTABLE} --startup-file=no --version
+    COMMAND "${JULIA_EXECUTABLE} --startup-file=no --version"
+    COMMAND_ECHO STDOUT
     OUTPUT_STRIP_TRAILING_WHITESPACE
     OUTPUT_VARIABLE JULIA_VERSION_FULL
     ERROR_VARIABLE JULIA_VERSION_ERROR
