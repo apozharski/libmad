@@ -49,6 +49,13 @@ jobs:
       shell: pwsh
     - name: build libMad
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL
-    - name: debug print
-      if: always()
-      run: Get-ChildItem -Recurse "."
+    - name: zip output
+      run: |
+        cd build\install && tar.exe -czf ..\..\libMad-windows-latest.tar.gz *
+    - uses: actions/upload-artifact@v4
+      with:
+        name: libMad-windows-latest
+        path: libMad-windows-latest.tar.gz
+    # - name: debug print
+    #   if: always()
+    #   run: Get-ChildItem -Recurse "."
