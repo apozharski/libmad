@@ -19,7 +19,7 @@ jobs:
     - name: add JuliaC to path
       run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
     - name: build libMad
-      run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && make install
+      run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target install --config Release
     - name: tar output
       run: cd build/install && tar -czf ../../libMad-ubuntu-latest.tar.gz *
     - uses: actions/upload-artifact@v4
