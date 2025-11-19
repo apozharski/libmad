@@ -35,10 +35,6 @@ jobs:
         julia-version: ['1']
     steps:
     - uses: actions/checkout@v4
-    - uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
-        install: gcc cmake make git
     - uses: julia-actions/install-juliaup@v2
       with:
         channel: ${{ matrix.julia-version }}
@@ -47,6 +43,11 @@ jobs:
     - name: add JuliaC to path
       run: echo "PATH=$HOME\.julia\bin;$env:PATH" >> $env:GITHUB_ENV
       shell: pwsh
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        install: gcc cmake make git
+        path-type: inherit
     - name: build libMad
       shell: msys2 {0}
       run: mkdir build && cd build && mkdir install && cmake .. -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target install
