@@ -35,10 +35,10 @@ jobs:
         julia-version: ['1']
     steps:
     - uses: actions/checkout@v4
-    - name: Configure to use mingw
-      run: |
-        echo "CC=gcc" >> $GITHUB_ENV
-        echo "CXX=g++" >> $GITHUB_ENV
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        install: gcc cmake make git
     - uses: julia-actions/install-juliaup@v2
       with:
         channel: ${{ matrix.julia-version }}
@@ -48,7 +48,8 @@ jobs:
       run: echo "PATH=$HOME\.julia\bin;$env:PATH" >> $env:GITHUB_ENV
       shell: pwsh
     - name: build libMad
-      run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL
+      shell: msys2 {0}
+      run: mkdir build && cd build && mkdir install && cmake .. -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target install
     - name: zip output
       run: |
         cd build\install && tar.exe -czf ..\..\libMad-windows-latest.tar.gz *
