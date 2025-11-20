@@ -1,5 +1,8 @@
-name: build
-on: workflow_dispatch
+name: publish
+on:
+  push:
+    tags:
+      - ["v[0-9]+.[0-9]+.[0-9]+", "v[0-9]+.[0-9]+.[0-9]+-*"]
 jobs:
   build_linux:
     name: Build binaries - ubuntu-latest
@@ -20,6 +23,17 @@ jobs:
       run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
     - name: build libMad
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target install --config Release
+    - name: tar output
+      run: cd build/install && tar -czf ../../libMad-ubuntu-x86_64-${{ github.ref_name }}.tar.gz *
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: libMad-ubuntu-x86_64-${{ github.ref_name }}.tar.gz
+        asset_name: libMad-ubuntu-x86_64-${{ github.ref_name }}.tar.gz
+        tag: ${{ github.ref }}
+        overwrite: true
+        body: "Release ${{ github.ref_name }}"
   build_windows:
     name: Build binaries - windows-latest
     runs-on: windows-latest
@@ -39,3 +53,15 @@ jobs:
       shell: pwsh
     - name: build libMad
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL --config Release
+    - name: tar output
+      run: |
+        cd build\install && tar.exe -czf ..\..\libMad-window-x86_64-${{ github.ref_name }}.tar.gz *
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: libMad-window-x86_64-${{ github.ref_name }}.tar.gz
+        asset_name: libMad-windows-x86_64-${{ github.ref_name }}.tar.gz
+        tag: ${{ github.ref }}
+        overwrite: true
+        body: "Release ${{ github.ref_name }}"
