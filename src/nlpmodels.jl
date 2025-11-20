@@ -57,10 +57,6 @@ Base.@ccallable function libmad_nlpmodel_create(nlp_ptr_ptr::Ptr{Ptr{Cvoid}},
     nlp_ptr = Ptr{CNLPModel{Cdouble, Vector{Cdouble}}}(pointer_from_objref(nlp))
     unsafe_store!(nlp_ptr_ptr, nlp_ptr)
     libmad_refs[nlp_ptr] = nlp
-    println("nvar: $(nvar)")
-    println("ncon: $(ncon)")
-    println("nnzj: $(nnzj)")
-    println("nnzh: $(nnzh)")
     return Cint(0)
 end
 
@@ -105,8 +101,6 @@ function NLPModels.jac_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::Abstr
     if ret != Cint(0)
         throw(Exception("CallbackError jac_struct"))
     end
-    println("I: $(I)")
-    println("J: $(J)")
     return I, J
 end
 
@@ -117,8 +111,6 @@ function NLPModels.hess_structure!(nlp::CNLPModel, I::AbstractVector{T}, J::Abst
     if ret != Cint(0)
         throw(Exception("CallbackError hess_struct"))
     end
-    println("I: $(I)")
-    println("J: $(J)")
     return I, J
 end
 
@@ -129,7 +121,6 @@ function NLPModels.obj(nlp::CNLPModel, x::AbstractVector)
     if ret != Cint(0)
         throw(Exception("CallbackError eval_f"))
     end
-    println("f: $(f[1])")
     return f[1]
 end
 
@@ -140,7 +131,6 @@ function NLPModels.cons!(nlp::CNLPModel, x::AbstractVector, c::AbstractVector)
     if ret != Cint(0)
         throw(Exception("CallbackError eval_cons"))
     end
-    println("c: $(c)")
     return c
 end
 
@@ -152,7 +142,6 @@ function NLPModels.grad!(nlp::CNLPModel, x::AbstractVector, g::AbstractVector)
     if ret != Cint(0)
         throw(Exception("CallbackError eval_grad_f"))
     end
-    println("g: $(g)")
     return g
 end
 
@@ -164,7 +153,6 @@ function NLPModels.jac_coord!(nlp::CNLPModel, x::AbstractVector, J::AbstractVect
     if ret != Cint(0)
         throw(Exception("CallbackError eval_jac_g"))
     end
-    println("VAL: $(J)")
     return J
 end
 
@@ -180,6 +168,5 @@ function NLPModels.hess_coord!(nlp::CNLPModel, x::AbstractVector, y::AbstractVec
     if ret != Cint(0)
         throw(Exception("CallbackError eval_hess_l"))
     end
-    println("H: $(H)")
     return H
 end
