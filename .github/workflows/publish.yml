@@ -33,7 +33,6 @@ jobs:
         file: libMad-ubuntu-x86_64-${{ github.ref_name }}.tar.gz
         asset_name: libMad-ubuntu-x86_64-${{ github.ref_name }}.tar.gz
         tag: ${{ github.ref }}
-        overwrite: true
         body: "Release ${{ github.ref_name }}"
   build_windows:
     name: Build binaries - windows-latest
@@ -64,5 +63,4 @@ jobs:
         file: libMad-window-x86_64-${{ github.ref_name }}.tar.gz
         asset_name: libMad-windows-x86_64-${{ github.ref_name }}.tar.gz
         tag: ${{ github.ref }}
-        overwrite: true
         body: "Release ${{ github.ref_name }}"
