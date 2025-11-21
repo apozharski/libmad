@@ -55,12 +55,42 @@ jobs:
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL --config Release
     - name: tar output
       run: |
-        cd build\install && tar.exe -czf ..\..\libMad-window-x86_64-${{ github.ref_name }}.tar.gz *
+        cd build\install && tar.exe -czf ..\..\libMad-windows-x86_64-${{ github.ref_name }}.tar.gz *
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: libMad-window-x86_64-${{ github.ref_name }}.tar.gz
+        file: libMad-windows-x86_64-${{ github.ref_name }}.tar.gz
         asset_name: libMad-windows-x86_64-${{ github.ref_name }}.tar.gz
+        tag: ${{ github.ref }}
+        body: "Release ${{ github.ref_name }}"
+  build_apple:
+    name: Build binaries - mac-latest
+    runs-on: mac-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version: ['1']
+    steps:
+    - uses: actions/checkout@v4
+    - uses: julia-actions/install-juliaup@v2
+      with:
+        channel: ${{ matrix.julia-version }}
+    - name: install JuliaC
+      run: julia -e 'using Pkg; Pkg.add(url="https://github.com/apozharski/JuliaC.jl.git"); Pkg.Apps.add(url="https://github.com/apozharski/JuliaC.jl.git")'
+    - name: add JuliaC to path
+      run: echo "PATH=$HOME\.julia\bin;$env:PATH" >> $env:GITHUB_ENV
+      shell: pwsh
+    - name: build libMad
+      run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL --config Release
+    -  name: tar output
+      run: |
+        cd build\install && tar.exe -czf ..\..\libMad-apple-aarch64-${{ github.ref_name }}.tar.gz *
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: libMad-apple-aarch64-${{ github.ref_name }}.tar.gz
+        asset_name: libMad-apple-aarch64-${{ github.ref_name }}.tar.gz
         tag: ${{ github.ref }}
         body: "Release ${{ github.ref_name }}"

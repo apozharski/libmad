@@ -39,3 +39,29 @@ jobs:
       shell: pwsh
     - name: build libMad
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL --config Release
+  build_apple:
+    name: Build binaries - mac-latest
+    runs-on: mac-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version: ['1']
+    steps:
+    - uses: actions/checkout@v4
+    - uses: julia-actions/install-juliaup@v2
+      with:
+        channel: ${{ matrix.julia-version }}
+    - name: install JuliaC
+      run: julia -e 'using Pkg; Pkg.add(url="https://github.com/apozharski/JuliaC.jl.git"); Pkg.Apps.add(url="https://github.com/apozharski/JuliaC.jl.git")'
+    - name: add JuliaC to path
+      run: echo "PATH=$HOME\.julia\bin;$env:PATH" >> $env:GITHUB_ENV
+      shell: pwsh
+    - name: build libMad
+      run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL --config Release
+    -  name: tar output
+      run: |
+        cd build\install && tar.exe -czf ..\..\libMad-apple-aarch64.tar.gz *
+    - uses: actions/upload-artifact@v4
+      with:
+        name: libMad-apple-aarch64
+        path: libMad-apple-aarch64.tar.gz
