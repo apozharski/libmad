@@ -33,3 +33,7 @@ JuliaLocalPreferences.toml
 build*/
 
 *~
+
+# because windows
+.vs
+/CMakeSettings.json
