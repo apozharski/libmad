@@ -41,7 +41,7 @@ jobs:
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target INSTALL --config Release
   build_apple:
     name: Build binaries - mac-latest
-    runs-on: mac-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
