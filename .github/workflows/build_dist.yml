@@ -59,7 +59,7 @@ jobs:
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target install --config Release
     - name: tar output
       run: |
-        cd build/install && tar.exe -czf ../../libMad-apple-aarch64.tar.gz *
+        cd build/install && tar -czf ../../libMad-apple-aarch64.tar.gz *
     - uses: actions/upload-artifact@v4
       with:
         name: libMad-apple-aarch64

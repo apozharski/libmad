@@ -84,7 +84,7 @@ jobs:
       run: mkdir build && cd build && mkdir install && cmake .. -DCMAKE_INSTALL_PREFIX="install" && cmake --build . --target install --config Release
     - name: tar output
       run: |
-        cd build/install && tar.exe -czf ../../libMad-apple-aarch64-${{ github.ref_name }}.tar.gz *
+        cd build/install && tar -czf ../../libMad-apple-aarch64-${{ github.ref_name }}.tar.gz *
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
