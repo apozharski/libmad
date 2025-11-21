@@ -65,8 +65,8 @@ jobs:
         tag: ${{ github.ref }}
         body: "Release ${{ github.ref_name }}"
   build_apple:
-    name: Build binaries - mac-latest
-    runs-on: mac-latest
+    name: Build binaries - macos-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
