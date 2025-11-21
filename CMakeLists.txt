@@ -99,6 +99,7 @@ if(LINUX OR APPLE)
     OUTPUT_STRIP_TRAILING_WHITESPACE
     OUTPUT_VARIABLE JULIAC_EXECUTABLE
   )
+  message(${JULIAC_EXECUTABLE})
 elseif(WIN32)
   execute_process(
     COMMAND where.exe juliac
