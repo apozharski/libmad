@@ -214,6 +214,13 @@ target_include_directories(libMad INTERFACE
 
 if(WITH_EXAMPLE)
   add_executable(basic_problem $<SHELL_PATH:${PROJECT_SOURCE_DIR}/examples/basic_problem.c>)
+  if(APPLE)
+    set_target_properties(
+    basic_problem
+    PROPERTIES 
+    INSTALL_RPATH 
+    "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib")  
+  endif()
   target_link_libraries(basic_problem PRIVATE libMad)
 endif()
 
