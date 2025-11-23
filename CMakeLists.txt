@@ -222,6 +222,16 @@ if(WITH_EXAMPLE)
     "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib")  
   endif()
   target_link_libraries(basic_problem PRIVATE libMad)
+
+  add_executable(no_hsl_example $<SHELL_PATH:${PROJECT_SOURCE_DIR}/examples/no_hsl_example.c>)
+  if(APPLE)
+    set_target_properties(
+    no_hsl_example
+    PROPERTIES 
+    INSTALL_RPATH 
+    "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib")  
+  endif()
+  target_link_libraries(no_hsl_example PRIVATE libMad)
 endif()
 
 cmake_print_properties(TARGETS libMad
@@ -246,6 +256,8 @@ install(
 
 if(WITH_EXAMPLE)
   install(TARGETS basic_problem
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  install(TARGETS no_hsl_example
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 ## Export configs
